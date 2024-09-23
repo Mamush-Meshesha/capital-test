@@ -1,8 +1,10 @@
+import { Box, Typography } from "@mui/material";
+
 // eslint-disable-next-line react/prop-types
-const Pizza = ({ hieght, width }) => {
+const Pizza = ({ hieght, width, name }) => {
   return (
-    <div style={{ width: `${width}px`, height: `${hieght}px` }}>
-      <svg
+    <Box display="flex" gap="15px" alignItems="center"  >
+      <svg style={{ width: `${width}px`, height: `${hieght}px` }}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 64 64"
         enableBackground="new 0 0 64 64"
@@ -114,7 +116,10 @@ const Pizza = ({ hieght, width }) => {
           />
         </g>
       </svg>
-    </div>
+      <Box>
+        <Typography variant="h3">{ name}</Typography>
+      </Box>
+    </Box>
   );
 };
 
