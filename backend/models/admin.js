@@ -29,9 +29,7 @@
 //     static async comparePasswords(password, hashedPassword) {
 //       return await bcrypt.compare(password, hashedPassword);
 //     }
-        
-        
-  
+
 //     }
 //     Admin.init({
 //         id: {
@@ -84,20 +82,63 @@
 //     return Admin
 // }
 
-  
+// const { DataTypes } = require('sequelize');
+// const sequelize = require('../config/index.js'); // Import the database connection
 
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/index.js'); // Import the database connection
+// // Define Admin model
+// const Admin = sequelize.define('Admin', {
+//   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+//   name: { type: DataTypes.STRING, allowNull: false },
+//   email: { type: DataTypes.STRING, unique: true, allowNull: false },
+//   password: { type: DataTypes.STRING, allowNull: false },
+//   role_id: { type: DataTypes.UUID, allowNull: false },
+// }, {
+//   timestamps: true,
+// });
 
-// Define Admin model
-const Admin = sequelize.define('Admin', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, unique: true, allowNull: false },
-  password: { type: DataTypes.STRING, allowNull: false },
-  role_id: { type: DataTypes.UUID, allowNull: false },
-}, {
-  timestamps: true,
-});
+// module.exports = Admin;
 
-module.exports = Admin;
+module.exports = (sequelize, DataTypes) => {
+  const Admin = sequelize.define(
+    "Admin",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phone_number: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      image_url: {
+        type: DataTypes.STRING,
+        allowNull: false, 
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      timestamps: false,
+      tableName: "admins",
+    }
+  );
+
+  return Admin;
+};

@@ -33,16 +33,53 @@
 // };
 
 
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/index.js');
+// const { DataTypes } = require('sequelize');
+// const sequelize = require('../config/index.js');
 
-// Define Restaurant model
-const Restaurant = sequelize.define('Restaurant', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  location: { type: DataTypes.STRING },
-}, {
-  timestamps: true,
-});
+// // Define Restaurant model
+// const Restaurant = sequelize.define('Restaurant', {
+//   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+//   name: { type: DataTypes.STRING, allowNull: false },
+//   location: { type: DataTypes.STRING },
+// }, {
+//   timestamps: true,
+// });
 
-module.exports = Restaurant;
+// module.exports = Restaurant;
+
+
+module.exports = (sequelize, DataTypes) => {
+  const Restaurant = sequelize.define(
+    "Restaurant",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: DataTypes.STRING,
+      location: DataTypes.STRING,
+      admin_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "admins",
+          key: "id",
+        },
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      timestamps: false,
+      tableName: "restaurants",
+    }
+  );
+
+  Restaurant.associate = (models) => {
+    Restaurant.belongsTo(models.Admin, { foreignKey: "admin_id" });
+  };
+
+  return Restaurant;
+};

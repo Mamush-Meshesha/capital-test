@@ -106,18 +106,61 @@
 // };
 
 
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/index.js');
+// const { DataTypes } = require('sequelize');
+// const sequelize = require('../config/index.js');
 
-// Define Customer model
-const Customer = sequelize.define('Customer', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, unique: true, allowNull: false },
-  password: { type: DataTypes.STRING, allowNull: false },
-  phone_number: { type: DataTypes.STRING },
-}, {
-  timestamps: true,
-});
+// // Define Customer model
+// const Customer = sequelize.define('Customer', {
+//   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+//   name: { type: DataTypes.STRING, allowNull: false },
+//   email: { type: DataTypes.STRING, unique: true, allowNull: false },
+//   password: { type: DataTypes.STRING, allowNull: false },
+//   phone_number: { type: DataTypes.STRING },
+// }, {
+//   timestamps: true,
+// });
 
-module.exports = Customer;
+// module.exports = Customer;
+
+
+module.exports = (sequelize, DataTypes) => {
+  const Customer = sequelize.define(
+    "Customer",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+      location: DataTypes.STRING,
+      password: DataTypes.STRING,
+      phone_number: DataTypes.INTEGER,
+      role_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "roles",
+          key: "id",
+        },
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      timestamps: false,
+      tableName: "customers",
+    }
+  );
+
+  Customer.associate = (models) => {
+    Customer.belongsTo(models.Role, { foreignKey: "role_id" });
+  };
+
+  return Customer;
+};

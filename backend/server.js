@@ -28,14 +28,20 @@
 
 const express = require('express');
  require("dotenv").config()
-const { sequelize } = require('./models'); // Import sequelize instance
+// const { sequelize } = require('./models'); 
 const {
+  sequelize,
   Admin,
-  Customer,
   Role,
+  RolePermission,
+  Manager,
+  Customer,
   Restaurant,
-  AdminRestaurantAssignment
-} = require('./models'); // Import models
+  Menu,
+  Topping,
+  Order,
+  OrderItem,
+} = require("./models"); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,7 +58,7 @@ app.get('/', (req, res) => {
 // Customer routes
 app.post('/customers', async (req, res) => {
   try {
-    const { name, email, password, phone_number } = req.body;
+    const { name, email, password, phone_number,location } = req.body;
     const customer = await Customer.create({ name, email, password, phone_number });
     res.status(201).json(customer);
   } catch (error) {
@@ -60,16 +66,42 @@ app.post('/customers', async (req, res) => {
   }
 });
 
+app.post("/manager", async (req, res) => {
+  const { name, email, location, password, phone_number } = req.body
+  const data = {
+    name,
+    email,
+    location,
+    password,
+    phone_number
+  }
+  try {
+    const response = await Manager.create(data)
+    res.status(201).json(response)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 // Admin routes
 app.post('/admins', async (req, res) => {
   try {
-    const { name, email, password, role_id } = req.body;
-    const admin = await Admin.create({ name, email, password, role_id });
+    const { name, email, password, phone_number, } = req.body;
+    const admin = await Admin.create({ name, email, password,phone_number });
     res.status(201).json(admin);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
+app.get("/get-admin", async (req, res) => {
+  try {
+    const admin = await Admin.findAll();
+    res.status(200).json(admin);
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 // Role routes
 app.post('/roles', async (req, res) => {
@@ -105,7 +137,7 @@ app.post('/assign', async (req, res) => {
 });
 
 // Sync database and start the server
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync().then(() => {
   console.log("Database & tables created!");
 
   // Start the server
