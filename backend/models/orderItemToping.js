@@ -1,30 +1,26 @@
 module.exports = (sequelize, DataTypes) => {
-  const Order = sequelize.define(
-    "Order",
+  const OrderItemTopping = sequelize.define(
+    "OrderItemTopping",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      customer_id: {
+      order_item_id: {
         type: DataTypes.INTEGER,
         references: {
-          model: "customers",
+          model: "order_items",
           key: "id",
         },
         allowNull: false,
       },
-      restaurant_id: {
+      topping_id: {
         type: DataTypes.INTEGER,
         references: {
-          model: "restaurants",
+          model: "toppings",
           key: "id",
         },
-        allowNull: false,
-      },
-      status: {
-        type: DataTypes.STRING,
         allowNull: false,
       },
       created_at: {
@@ -34,16 +30,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       timestamps: false,
-      tableName: "orders",
+      tableName: "order_item_toppings",
     }
   );
 
-  Order.associate = (models) => {
-    Order.belongsTo(models.Customer, { foreignKey: "customer_id" });
-    Order.belongsTo(models.Restaurant, { foreignKey: "restaurant_id" });
-
-    Order.hasMany(models.OrderItem, { foreignKey: "order_id" }); // Order has many OrderItems
+  OrderItemTopping.associate = (models) => {
+    OrderItemTopping.belongsTo(models.OrderItem, {
+      foreignKey: "order_item_id",
+    });
+    OrderItemTopping.belongsTo(models.Topping, { foreignKey: "topping_id" });
   };
 
-  return Order;
+  return OrderItemTopping;
 };

@@ -1,14 +1,9 @@
-// // routes/user.route.js
-// import express from "express";
-// // import { registerUser, loginUser } from "../controllers/user.controller.js";
-// import { registerAdmin } from "../controllers/admin.controller.js";
+const express = require("express");
+const { customerSignup, customerLogin, customerOrder } = require("../controllers/user.controller");
+const { protectCustomer } = require("../middlewares/authMiddleware");
+const router = express.Router()
 
-
-// const router = express.Router();
-
-// export default (models) => {
-//   router.post("/admin/register", (req, res) => registerAdmin(req, res, models));
-//   router.post("/login", (req, res) => loginUser(req, res, models));
-
-//   return router;
-// };
+router.post("/customers/signup", customerSignup);
+router.post("/customer/login", customerLogin);
+router.post("/customer/order", protectCustomer, customerOrder);
+module.exports = router

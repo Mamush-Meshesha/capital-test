@@ -1,23 +1,17 @@
-import jwt from "jsonwebtoken"
 
-class JWTUtils {
-    static generateAcessToken(payload, options = {}) {
-        const { expiresIn = "1d" } = options
-        
-        return jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, {expiresIn} )
-    }
+const jwt = require("jsonwebtoken")
 
-    static generateRefreshToken(payload) {
-        return jwt.sign(payload, process.env.JWT_REFRESH_TOKEN)
-    }
+module.exports = {
+    generateToken(res, id) { 
+        const token = jwt.sign({ id }, process.env.JWT_ACCESS_TOKEN, {
+            expiresIn: 3600 *60*60
+        });
 
-    static verifyAccessToken(accessToken) {
-        return jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN)
-    }
-
-    static verifyRefreshToken(refreshToken) {
-        return jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN)
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 3600 *60*60,
+            sameSite: "strict"
+        })
     }
 }
-
-export default JWTUtils

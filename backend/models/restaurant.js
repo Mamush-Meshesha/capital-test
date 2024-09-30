@@ -1,53 +1,3 @@
-// // models/restaurant.js
-// import { Model, DataTypes } from "sequelize";
-
-// export default (sequelize) => {
-//   class Restaurant extends Model {
-//     static associate(models) {
-//       Restaurant.hasMany(models.User, {
-//         as: "managers",
-//         foreignKey: "restaurantId",
-//       });
-//     }
-//   }
-
-//   Restaurant.init(
-//     {
-//       name: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//       },
-//       address: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//       },
-//       // Add other restaurant-related fields
-//     },
-//     {
-//       sequelize,
-//       modelName: "Restaurant",
-//     }
-//   );
-
-//   return Restaurant;
-// };
-
-
-// const { DataTypes } = require('sequelize');
-// const sequelize = require('../config/index.js');
-
-// // Define Restaurant model
-// const Restaurant = sequelize.define('Restaurant', {
-//   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-//   name: { type: DataTypes.STRING, allowNull: false },
-//   location: { type: DataTypes.STRING },
-// }, {
-//   timestamps: true,
-// });
-
-// module.exports = Restaurant;
-
-
 module.exports = (sequelize, DataTypes) => {
   const Restaurant = sequelize.define(
     "Restaurant",
@@ -57,14 +7,29 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      name: DataTypes.STRING,
-      location: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      location: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       admin_id: {
         type: DataTypes.INTEGER,
         references: {
           model: "admins",
           key: "id",
         },
+        allowNull: false,
+      },
+      managerId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "managers",
+          key: "id",
+        },
+        allowNull: false,
       },
       created_at: {
         type: DataTypes.DATE,
@@ -79,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Restaurant.associate = (models) => {
     Restaurant.belongsTo(models.Admin, { foreignKey: "admin_id" });
+    Restaurant.belongsTo(models.Manager, { foreignKey: "managerId" });
   };
 
   return Restaurant;

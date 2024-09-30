@@ -13,9 +13,16 @@ module.exports = (sequelize, DataTypes) => {
           model: "roles",
           key: "id",
         },
+        allowNull: false,
       },
-      recource: DataTypes.STRING,
-      action: DataTypes.STRING,
+      recource: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      action: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

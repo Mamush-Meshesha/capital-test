@@ -27,7 +27,11 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Topping.associate = (models) => {
-    Topping.belongsTo(models.Menu, { foreignKey: "menu_id" });
+  Topping.belongsTo(models.Menu, { foreignKey: "menu_id" });
+  Topping.belongsToMany(models.OrderItem, {
+    through: models.OrderItemTopping,
+    foreignKey: "topping_id",
+  });
   };
 
   return Topping;

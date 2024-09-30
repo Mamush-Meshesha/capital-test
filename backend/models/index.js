@@ -1,66 +1,6 @@
-// import fs from "fs";
-// import path from "path";
-// import { fileURLToPath } from "url";
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// let jss = {};
-
-// export async function registerjss(sequelize) {
-//   const thisFile = path.basename(__filename);
-//   const jsFiles = fs.readdirSync(__dirname);
-//   const filteredjsFiles = jsFiles.filter(
-//     (file) => file !== thisFile && file.slice(-3) === ".js"
-//   );
-
-//   // First, import all jss
-//   for (const file of filteredjsFiles) {
-//     try {
-//       const module = await import(path.join(__dirname, file));
-//       const js = module.default(sequelize);
-//       jss[js.name] = js;
-//     } catch (err) {
-//       console.error(`Error loading js ${file}:`, err);
-//     }
-//   }
-
-//   // Then, call associate function for each js
-//   Object.values(jss).forEach((js) => {
-//     if (js.associate) {
-//       js.associate(jss);
-//     }
-//   });
-
-//   jss.sequelize = sequelize;
-//   return jss;
-// }
-
-
-// const sequelize = require('../config/index.js');
-// const Admin = require('./admin.js');
-// const Customer = require('./customer.js');
-// const Role = require('./role');
-// const Restaurant = require('./restaurant');
-// const AdminRestaurantAssignment = require('./adminRestaurantAssignment');
-
-// // Define Relationships
-// Admin.belongsTo(Role, { foreignKey: 'role_id' });
-// Admin.belongsToMany(Restaurant, { through: AdminRestaurantAssignment });
-// Restaurant.belongsToMany(Admin, { through: AdminRestaurantAssignment });
-
-// module.exports = {
-//   sequelize,
-//   Admin,
-//   Customer,
-//   Role,
-//   Restaurant,
-//   AdminRestaurantAssignment
-// };
-
-
-// index.js
 const {  DataTypes } = require('sequelize');
 const sequelize = require("../config/index.js");
+const orderItemToping = require("./orderItemToping.js")(sequelize, DataTypes);
 
 const Admin = require('./admin.js')(sequelize, DataTypes);
 const Role = require('./role.js')(sequelize, DataTypes);
@@ -110,6 +50,15 @@ OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
 Menu.hasMany(OrderItem, { foreignKey: 'menu_id' });
 OrderItem.belongsTo(Menu, { foreignKey: 'menu_id' });
 
+OrderItem.belongsToMany(Topping, {
+  through: orderItemToping,
+  foreignKey: "order_item_id",
+});
+Topping.belongsToMany(OrderItem, {
+  through: orderItemToping,
+  foreignKey: "topping_id",
+});
+
 module.exports = {
     sequelize,
     Admin,
@@ -121,5 +70,6 @@ module.exports = {
     Menu,
     Topping,
     Order,
-    OrderItem   
+    OrderItem,
+    orderItemToping
 }

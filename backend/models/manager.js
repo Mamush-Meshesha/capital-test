@@ -1,4 +1,3 @@
-// manager.model.js
 module.exports = (sequelize, DataTypes) => {
   const Manager = sequelize.define(
     "Manager",
@@ -15,28 +14,44 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      name: DataTypes.STRING,
-      location: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      location: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       email: {
         type: DataTypes.STRING,
         unique: true,
+        allowNull: false,
       },
-      password: DataTypes.STRING,
-      phone_number: DataTypes.INTEGER,
-      restaurant_id: {
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phone_number: {
         type: DataTypes.INTEGER,
-        references: {
-          model: "restaurants",
-          key: "id",
-        },
+        allowNull: false,
       },
+      // restaurant_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "restaurants",
+      //     key: "id",
+      //   },
+      //   allowNull: false,
+      // },
       role_id: {
         type: DataTypes.INTEGER,
         references: {
           model: "roles",
           key: "id",
         },
+        allowNull: false,
       },
+
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -49,8 +64,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Manager.associate = (models) => {
-    Manager.belongsTo(models.Admin, { foreignKey: "admin_id" });
-    Manager.belongsTo(models.Restaurant, { foreignKey: "restaurant_id" });
+   Manager.belongsTo(models.Admin, { foreignKey: "admin_id" });
     Manager.belongsTo(models.Role, { foreignKey: "role_id" });
   };
 

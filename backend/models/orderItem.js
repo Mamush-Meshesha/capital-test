@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
           model: "orders",
           key: "id",
         },
+        allowNull: false,
       },
       menu_id: {
         type: DataTypes.INTEGER,
@@ -20,8 +21,12 @@ module.exports = (sequelize, DataTypes) => {
           model: "menus",
           key: "id",
         },
+        allowNull: false,
       },
-      quantity: DataTypes.INTEGER,
+      quantity: {
+       type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -34,8 +39,12 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   OrderItem.associate = (models) => {
-    OrderItem.belongsTo(models.Order, { foreignKey: "order_id" });
-    OrderItem.belongsTo(models.Menu, { foreignKey: "menu_id" });
+   OrderItem.belongsTo(models.Order, { foreignKey: "order_id" });
+   OrderItem.belongsTo(models.Menu, { foreignKey: "menu_id" });
+  OrderItem.belongsToMany(models.Topping, {
+    through: models.OrderItemTopping,
+    foreignKey: "order_item_id",
+  });
   };
 
   return OrderItem;
