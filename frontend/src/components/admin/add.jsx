@@ -1,5 +1,4 @@
 import { Box, Button, Checkbox, Grid2, ListItem, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material"
-import { MaterialReactTable } from "material-react-table";
 import { useState } from "react";
 
 
@@ -34,16 +33,6 @@ const AddRecipe = () => {
        }
      };
 
-     const handleUpload = () => {
-       if (selectedImage) {
-         // Perform image upload logic here
-         console.log("Uploading image:", selectedImage);
-         // You can use FormData or another method to send the image to the server
-       } else {
-         console.log("No image selected.");
-       }
-     };
-
      const handleRemoveImage = () => {
        setSelectedImage(null);
        setPreview(null); // Clear the preview
@@ -51,7 +40,8 @@ const AddRecipe = () => {
 
     return (
       <Box display="flex" justifyContent="center">
-        <Box>
+            <Box>
+                <Typography variant="h4" textAlign="center" paddingY="30px">Add Menu</Typography>
           <TextField
             placeholder="Name"
             type="text"
@@ -99,7 +89,7 @@ const AddRecipe = () => {
               label="Price"
               sx={{ width: "100%" }}
             />
-            <Box>
+            <Box paddingTop="25px" textAlign="center">
               <Button
                 variant="contained"
                 component="label"
@@ -109,7 +99,8 @@ const AddRecipe = () => {
                   backgroundColor: "#fff",
                   color: "#000",
                   borderRadius: "8px",
-                  padding: "10px 20px",
+                  padding: "20px 20px",
+                  width: "60%",
                   "&:hover": {
                     border: "2px dashed #555",
                     backgroundColor: "#f0f0f0",
@@ -153,28 +144,20 @@ const AddRecipe = () => {
                   </Button>
                 </Box>
               )}
-
-              {/* Optionally, add an upload button */}
+            </Box>
+            <Box textAlign="center">
               <Button
                 variant="contained"
-                onClick={handleUpload}
-                disabled={!selectedImage} // Disable if no image selected
-                sx={{ marginTop: 2 }}
+                sx={{
+                  hieght: "48px",
+                  background: "#ff9921",
+                  width: "60%",
+                  paddingY: "20px",
+                }}
               >
-                Upload Image
+                Submit
               </Button>
             </Box>
-            <Button
-              variant="contained"
-              sx={{
-                hieght: "48px",
-                background: "#ff9921",
-                width: "60%",
-                paddingY: "20px",
-              }}
-            >
-              Submit
-            </Button>
           </Box>
         </Box>
       </Box>

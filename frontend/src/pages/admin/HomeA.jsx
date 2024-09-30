@@ -1,11 +1,11 @@
 import { Box } from "@mui/material"
-import Sidebar from "../../components/admin/Sidebar"
+import AddRecipe from "../../components/admin/add"
 
 const AdminHome = () => {
 
     return (
         <Box>
-                <Sidebar />
+                < AddRecipe/>
         </Box>
     )
 }
