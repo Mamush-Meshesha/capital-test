@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
-const { Customer, Topping, OrderItem, Menu, Restaurant, Order, sequelize } = require("../models");
-const { protectCustomer } = require("../middlewares/authMiddleware");
+const { Customer, Topping, OrderItem, Menu,orderItemToping, Restaurant, Order, sequelize } = require("../models");
 const { generateToken } = require("../utils/jwt-uitls");
 
 const customerSignup = async (req, res) => {
@@ -52,94 +51,108 @@ const customerLogin = async (req, res) => {
 
 
 const customerOrder = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
   try {
     const { restaurantId, items } = req.body;
     const customerId = req.user.id;
 
+    console.log(customerId);
+
     // Check if the restaurant exists
-    const restaurant = await Restaurant.findByPk(restaurantId);
+    const restaurant = await Restaurant.findByPk(restaurantId, { transaction });
     if (!restaurant) {
+      await transaction.rollback();
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
     // Create the order
-    const order = await Order.create({
-      customer_id: customerId,
-      restaurant_id: restaurantId,
-      status: "Pending",
-    });
+    const order = await Order.create(
+      {
+        customer_id: customerId,
+        restaurant_id: restaurantId,
+        status: "Preparing",
+      },
+      { transaction }
+    );
+
+    const orderDetails = []; 
 
     // Create order items with toppings
     for (const item of items) {
-      const menu = await Menu.findByPk(item.menuId);
+      const menu = await Menu.findByPk(item.menuId, { transaction });
       if (!menu) {
-        // If a menu item is not found, delete the created order and return an error
-        await order.destroy();
+        await transaction.rollback();
         return res
           .status(404)
           .json({ message: `Menu item with id ${item.menuId} not found` });
       }
 
       // Create OrderItem
-      const orderItem = await OrderItem.create({
-        order_id: order.id,
-        menu_id: item.menuId,
+      const orderItem = await OrderItem.create(
+        {
+          order_id: order.id,
+          menu_id: item.menuId,
+          quantity: item.quantity,
+        },
+        { transaction }
+      );
+
+      // Add menu details to orderDetails
+      orderDetails.push({
+        menuId: menu.id,
+        name: menu.name,
+        price: menu.price, 
         quantity: item.quantity,
       });
 
-      // If toppings are provided, associate them with the OrderItem
       if (item.toppings && item.toppings.length > 0) {
         const toppings = await Topping.findAll({
           where: {
             id: item.toppings,
-            menu_id: item.menuId, // Ensure toppings belong to the correct menu item
+            menu_id: item.menuId, 
           },
+          transaction,
         });
 
         if (toppings.length !== item.toppings.length) {
-          // If not all toppings are found, delete the created order and return an error
-          await order.destroy();
+          await transaction.rollback();
           return res.status(404).json({
             message: `One or more toppings not found or not associated with the menu item`,
           });
         }
 
         // Associate the toppings with the order item
-        await orderItem.addToppings(toppings);
+        await Promise.all(
+          toppings.map((topping) =>
+            orderItemToping.create(
+              {
+                order_item_id: orderItem.id,
+                topping_id: topping.id,
+              },
+              { transaction }
+            )
+          )
+        );
       }
     }
 
-    // Fetch the complete order with items and toppings
-    const completeOrder = await Order.findByPk(order.id, {
-      include: [
-        {
-          model: OrderItem,
-          include: [
-            {
-              model: Menu,
-              attributes: ["name", "price"],
-            },
-            {
-              model: Topping,
-              attributes: ["name", "price"],
-              through: { attributes: [] },
-            },
-          ],
-        },
-      ],
-    });
+    await transaction.commit();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Order placed successfully",
-      order: completeOrder,
+      orderId: order.id,
+      orderDetails,
     });
   } catch (error) {
-    console.error("Order placement error:", error);
-    res
+    await transaction.rollback();
+    console.error(error);
+    return res
       .status(500)
       .json({ message: "An error occurred while placing the order" });
   }
 };
+
 module.exports = {
     customerSignup,
     customerLogin,

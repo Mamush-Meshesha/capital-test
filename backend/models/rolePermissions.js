@@ -15,12 +15,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         allowNull: false,
       },
-      recource: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      action: {
-        type: DataTypes.STRING,
+      permissions: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: [
+          "update order status",
+          "see customers",
+          "see orders",
+          "add user",
+          "create role",
+        ],
         allowNull: false,
       },
       created_at: {

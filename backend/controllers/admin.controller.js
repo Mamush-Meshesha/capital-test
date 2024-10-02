@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt")
-const { Admin, Manager, Restaurant, Role, Customer } = require("../models");
+const { Admin, Manager, Restaurant, Role, Customer, RolePermission } = require("../models");
 const { generateToken } = require("../utils/jwt-uitls");
 
 
@@ -108,9 +108,6 @@ const getRestaurants = async (req, res) => {
           model: Manager,
           attributes: ["name"],
         },
-        {
-          
-        }
       ],
     });
     res.status(200).json(restaurants);
@@ -119,17 +116,71 @@ const getRestaurants = async (req, res) => {
   }
 };
 
+const createRoleWithPermissions = async (req, res) => {
+  const { roleName, permissions } = req.body; 
+
+  if (!roleName || !permissions || !Array.isArray(permissions)) {
+    return res.status(400).json({
+      message: "Role name and permissions (as an array) are required.",
+    });
+  }
+
+  try {
+    const newRole = await Role.create({
+      name: roleName,
+    });
+
+    const rolePermissions = await RolePermission.create({
+      role_id: newRole.id,
+      permissions: permissions, 
+    });
+
+    return res.status(201).json({
+      message: "Role and permissions created successfully.",
+      role: newRole,
+      permissions: rolePermissions,
+    });
+  } catch (error) {
+    console.error("Error creating role with permissions:", error);
+    return res.status(500).json({
+      message: "An error occurred while creating the role and permissions.",
+      error: error.message,
+    });
+  }
+};
+
 //get roles
 
 const getRoles = async (req, res) => {
   
   try {
-    const roles = await Role.findAll({})
+    const roles = await Role.findAll({
+      include: [
+        {
+           model: RolePermission,
+          attributes: ["permissions"],
+        },
+      ],
+    });
     res.status(200).json(roles);
   } catch (error) {
     console.log(error)
   }
 }
+
+
+const getPermission = async (req, res) => {
+  try {
+    const defaultPermissions =
+      RolePermission.getAttributes().permissions.defaultValue;
+    res.status(200).json(defaultPermissions);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching default permissions" });
+  }
+};
 
 const getUsers = async (req, res) => {
   try {
@@ -159,30 +210,18 @@ const getManager = async (req, res) => {
   }
 }
 
-// const getRestaurants = async(req, res) => {
-//   try {
-//     const restaurant = await Restaurant.findAll({
-//       include: [
-//         {
-//           model: Manager,
-//           attributes: ["name"],
-//         },
-      
-//       ]
-//     })
-//   } catch (error) {
-    
-//   }
-// }
+
 module.exports = {
-    adminSignUp,
-    adminLogin,
-    Roles,
-    Restaurants,
+  adminSignUp,
+  adminLogin,
+  Roles,
+  Restaurants,
   getRestaurants,
   adminLogout,
   getRoles,
   getUsers,
   getManager,
-    getRestaurants
-}
+  getRestaurants,
+  getPermission,
+  createRoleWithPermissions,
+};

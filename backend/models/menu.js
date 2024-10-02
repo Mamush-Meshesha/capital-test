@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Menu.associate = (models) => {
     Menu.belongsTo(models.Restaurant, { foreignKey: "restaurants_id" });
-    Menu.belongsTo(models.Manager, { foreignKey: "manager_id" }); // Optional association
+    Menu.belongsTo(models.Manager, { foreignKey: "manager_id" }); 
  
  Menu.hasMany(models.Topping, { foreignKey: "menu_id" }); 
   };

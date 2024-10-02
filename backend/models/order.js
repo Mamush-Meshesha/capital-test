@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     Order.belongsTo(models.Customer, { foreignKey: "customer_id" });
     Order.belongsTo(models.Restaurant, { foreignKey: "restaurant_id" });
 
-    Order.hasMany(models.OrderItem, { foreignKey: "order_id" }); // Order has many OrderItems
+    Order.hasMany(models.OrderItem, { foreignKey: "order_id" });
   };
 
   return Order;

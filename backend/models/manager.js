@@ -64,8 +64,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Manager.associate = (models) => {
-   Manager.belongsTo(models.Admin, { foreignKey: "admin_id" });
+    Manager.belongsTo(models.Admin, { foreignKey: "admin_id" });
     Manager.belongsTo(models.Role, { foreignKey: "role_id" });
+    Manager.hasMany(models.Menu, { foreignKey: "manager_id" });
   };
 
   return Manager;

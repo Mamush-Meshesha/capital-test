@@ -23,7 +23,11 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Role.associate = (models) => {
-    Role.hasMany(models.Manager, { foreignKey: "role_id" });
+    Role.hasMany(models.Manager, { foreignKey: "role_id", });
+     Role.hasMany(models.RolePermission, {
+       foreignKey: "role_id",
+       as: "permissions",
+     });
   };
 
   return Role;

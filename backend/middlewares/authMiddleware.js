@@ -48,30 +48,45 @@ const protectManager = async (req, res, next) => {
 };
 
 const protectCustomer = async (req, res, next) => {
-  let token = req.cookies.jwt;
+  let token;
+
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+  else if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  console.log("Received token:", token);
 
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
+      console.log("Decoded token:", decoded);
+
       req.user = await Customer.findByPk(decoded.id);
 
       if (!req.user) {
-        console.log("customer not found for id:", decoded.id);
+        console.log("Customer not found for id:", decoded.id);
         return res
           .status(401)
           .json({ message: "Not authorized, customer not found" });
       }
 
+      console.log("User found:", req.user.id);
       next();
     } catch (error) {
       console.error("JWT verification error:", error);
       res.status(401).json({ message: "Not authorized, token failed" });
     }
   } else {
+    console.log("No token found");
     res.status(401).json({ message: "Not authorized, no token" });
   }
 };
-
 
 const superAdmin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {

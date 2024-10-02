@@ -1,6 +1,6 @@
 const express = require("express");
 const { customerSignup, customerLogin, customerOrder } = require("../controllers/user.controller");
-const { protectCustomer } = require("../middlewares/authMiddleware");
+const { protectCustomer, protect } = require("../middlewares/authMiddleware");
 const router = express.Router()
 
 router.post("/customers/signup", customerSignup);

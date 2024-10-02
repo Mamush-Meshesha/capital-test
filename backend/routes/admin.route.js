@@ -1,18 +1,36 @@
-const express = require("express")
-const { adminSignUp, adminLogin, Roles, Restaurants, getRestaurants, adminLogout, getRoles, getUsers, getManager } = require("../controllers/admin.controller")
-const { protect, superAdmin, protectManager } = require("../middlewares/authMiddleware")
+const express = require("express");
+const {
+  adminSignUp,
+  adminLogin,
+  Roles,
+  Restaurants,
+  getRestaurants,
+  adminLogout,
+  getRoles,
+  getUsers,
+  getManager,
+  getPermission,
+  createRoleWithPermissions,
+} = require("../controllers/admin.controller");
+const {
+  
+  protect,
+  superAdmin,
+} = require("../middlewares/authMiddleware");
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/admin/signup", adminSignUp)
-router.post("/admin/login", adminLogin)
-router.post("/admin/logout", adminLogout)
-router.post("/roles", protect, superAdmin, Roles)
-router.post("/restaurants", protect, superAdmin, Restaurants);
-router.get("/restaurants", protect, superAdmin, getRestaurants);
+router.post("/admin/signup", adminSignUp);
+router.post("/admin/login", adminLogin);
+router.post("/admin/logout", adminLogout);
+router.post("/roles", protect,  Roles);
+router.post("/restaurants", protect,superAdmin,  Restaurants);
+router.post("/rolepermission", protect,  createRoleWithPermissions);
 
-router.get("/roles", protect, getRoles)
-router.get("/customers", getUsers)
-router.get("/managers", protect,getManager)
+router.get("/restaurants", protect,  getRestaurants);
+router.get("/roles", protect, getRoles);
+router.get("/customers", getUsers);
+router.get("/managers", protect, getManager);
+router.get("/permission", protect,  getPermission);
 
-module.exports = router
+module.exports = router;

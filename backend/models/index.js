@@ -50,6 +50,10 @@ OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
 Menu.hasMany(OrderItem, { foreignKey: 'menu_id' });
 OrderItem.belongsTo(Menu, { foreignKey: 'menu_id' });
 
+Manager.hasMany(Menu, { foreignKey: "manager_id" });
+Menu.belongsTo(Manager, { foreignKey: "manager_id" });
+
+
 OrderItem.belongsToMany(Topping, {
   through: orderItemToping,
   foreignKey: "order_item_id",
