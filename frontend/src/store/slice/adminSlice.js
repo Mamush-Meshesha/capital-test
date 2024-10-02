@@ -8,7 +8,9 @@ const initialState = {
   registeredAdmin: [],
   customers: [],
   managers: [],
-  restaurant: []
+  restaurant: [],
+  rolePermission: [],
+  createRestaurants: []
 };
 
 export const adminSlice = createSlice({
@@ -27,6 +29,7 @@ export const adminSlice = createSlice({
     adminLoginFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
+      state.isAdminLogin = false
     },
     adminlogoutRequest: (state) => {
       state.loading = true;
@@ -94,6 +97,29 @@ export const adminSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    createRolePermissionRequest: (state) => {
+      state.loading = true;
+    },
+    createRolePermissionSuccess: (state, action) => {
+      state.loading = false;
+      state.rolePermission = action.payload;
+    },
+    createRolePermissionFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    createRestaurantRequest: (state) => {
+      state.loading = true;
+    },
+    createRestaurantSuccess: (state, action) => {
+      state.loading = false;
+      state.createRestaurants = action.payload;
+    },
+    createRestaurantFailure: (state, action) => { 
+      state.loading = false
+      state.error = action.payload
+    }
   },
 });
 
@@ -118,6 +144,12 @@ export const {
   fetchManagerSuccess,
   fetchRestaurantFailure,
   fetchRestaurantRequest,
-  fetchRestaurantSuccess
+  fetchRestaurantSuccess,
+  createRolePermissionFailure,
+  createRolePermissionRequest,
+  createRolePermissionSuccess,
+  createRestaurantFailure,
+  createRestaurantRequest,
+  createRestaurantSuccess
 } = adminSlice.actions;
 export default adminSlice.reducer;

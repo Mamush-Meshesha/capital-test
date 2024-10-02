@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, Container, Paper } from "@mui/material";
+import { Box,  Container, Paper } from "@mui/material";
 
 const Items = ({item }) => {
       const gradient = `linear-gradient(45deg, ${item.colors.join(", ")})`;
@@ -18,9 +18,6 @@ const Items = ({item }) => {
           <Container>
             <h2>{item.name}</h2>
             <p>{item.description}</p>
-            <Button variant="contained" color="primary">
-              Check it out!
-            </Button>
                 </Container>
                 <Box component="img" src="/one.png"  />
 

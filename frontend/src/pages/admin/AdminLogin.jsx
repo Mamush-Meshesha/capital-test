@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, Container, FormControlLabel, Grid2, TextField, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import Pizza from "../../components/Piza";
 import BackGround from "../../components/auth/Background";
 import { useEffect, useState } from "react";
@@ -11,7 +11,6 @@ const AdminLogin = () => {
     const [password, setPassword] = useState("")
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { isAdminLogin } = useSelector((state) => state.admin)
   
 
     const handleLogin = (e) => {
@@ -24,11 +23,14 @@ const AdminLogin = () => {
 
         dispatch(adminLoginRequest(data))
     }
-  useEffect(() => {
-    if (isAdminLogin) {
-      navigate("/admin")
-      }
-    },[isAdminLogin,navigate]);
+const isAdminLogin = useSelector((state) => state.admin.isAdminLogin);
+
+useEffect(() => {
+  if (isAdminLogin) {
+    navigate("/admin"); 
+  }
+}, [isAdminLogin, navigate]);
+
     return (
       <Grid2 container direction="row">
         <Grid2 size={6}>

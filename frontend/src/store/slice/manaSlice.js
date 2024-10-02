@@ -7,7 +7,10 @@ const initialState = {
   error: null,
   registeredManager: [],
   orders: [],
-  roles: []
+  roles: [],
+  permissions: [],
+  menuTopping: [],
+  image:[]
 };
 
 export const ManagerSlice = createSlice({
@@ -67,6 +70,43 @@ export const ManagerSlice = createSlice({
       state.error = action.payload
     },
 
+    fetchPermissionRequest: (state) => {
+      state.loading = true
+    },
+    fetchPermissionSuccess: (state, action) => {
+      state.loading = false
+      state.permissions = action.payload
+    },
+    fetchPermissionFailure: (state, action) => {
+      state.loading = false
+      state.error = action.payload
+    },
+
+    createMenuToppingRequest: (state) => {
+      state.loading = true
+    },
+    createMenuToppingSuccess: (state, action) => {
+      state.menuTopping = action.payload
+    },
+    createMenuToppingFailure: (state, action) => {
+      state.loading = false
+      state.error = action.payload
+    },
+
+    // imgur image upload
+
+    uploadImageImgurRequest: (state) => {
+      state.loading = true
+
+    },
+    uploadImageImgurSuccess: (state, action) => {
+      state.image = action.payload
+      state.loading = false
+    },
+    uploadImageImgurFailure: (state, action) => {
+      state.loading = false
+      state.error = action.payload
+    }
   },
 });
 
@@ -84,6 +124,15 @@ export const {
   managerOrdersFail,
   fetchRoleFailure,
   fetchRoleRequest,
-  fetchRoleSuccess
+  fetchRoleSuccess,
+  fetchPermissionFailure,
+  fetchPermissionRequest,
+  fetchPermissionSuccess,
+  createMenuToppingFailure,
+  createMenuToppingRequest,
+  createMenuToppingSuccess,
+  uploadImageImgurFailure,
+  uploadImageImgurRequest,
+  uploadImageImgurSuccess
 } = ManagerSlice.actions;
 export default ManagerSlice.reducer;

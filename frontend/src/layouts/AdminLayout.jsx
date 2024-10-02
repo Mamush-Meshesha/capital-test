@@ -1,15 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Sidebar from "../components/admin/Sidebar";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const AdminLayout = () => {
-  // const isAdmin = useSelector((state) => state.admin.isAdmin); // Assuming this returns true/false
+const isAdminLogin = useSelector((state) => state.admin.isAdminLogin);
+const navigate = useNavigate(); 
 
-  // // Redirect to login if the user is not an admin
-  // if (!isAdmin) {
-  //   return <Navigate to="/admin/login" replace />;
-  // }
-
-
+useEffect(() => {
+  if (!isAdminLogin) {
+    navigate("/admin/login"); 
+  }
+}, [isAdminLogin, navigate]);
   return (
     <>
       <Sidebar />

@@ -2,6 +2,9 @@ import {
   loginFailure,
   loginStart,
   loginSuccess,
+  orderHistoryFailure,
+  orderHistoryRequest,
+  orderHistorySuccess,
   registerFailure,
   registerStart,
   registerSuccess,
@@ -19,6 +22,7 @@ function* loginCustomer(action) {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true
       }
     );
     yield put(loginSuccess(res.data));
@@ -37,11 +41,23 @@ function* registerCustomer(action) {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true
       }
     );
     yield put(registerSuccess(res.data));
   } catch (error) {
     yield put(registerFailure(error.message));
+  }
+}
+
+function* fetchOrderHistory() {
+  try {
+    const res = yield call(axios.get, "http://localhost:3000/api/order-history", {
+      withCredentials: true
+    })
+    yield put(orderHistorySuccess(res.data))
+  } catch (error) {
+    yield put(orderHistoryFailure(error.message))
   }
 }
 
@@ -54,4 +70,7 @@ function* watchCustomerSignup() {
   yield takeLatest(registerStart, registerCustomer);
 }
 
-export { watchCustomerLogin, watchCustomerSignup };
+function* watchFetchOrderHistory() {
+  yield takeLatest(orderHistoryRequest, fetchOrderHistory)
+}
+export { watchCustomerLogin, watchCustomerSignup, watchFetchOrderHistory };

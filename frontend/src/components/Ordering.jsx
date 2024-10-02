@@ -11,10 +11,8 @@ import { useState } from "react";
 const OrderCheck = () => {
   const [checkedItems, setCheckedItems] = useState([0]);
 
-  // List of items for the checklist
   const items = ["Oil", "Onion", "Salad", "Flour", "Nting", "Food"];
 
-  // Handle checkbox toggle
   const handleToggle = (value) => {
     const currentIndex = checkedItems.indexOf(value);
     const newChecked = [...checkedItems];

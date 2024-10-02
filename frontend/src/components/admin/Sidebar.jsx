@@ -33,10 +33,8 @@ const Sidebar = () => {
   const location = useLocation();
   const theme = useTheme();
 
-  // State to handle drawer open/close
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Media query for screen size detection (true if small screen)
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleLogOut = (e) => {
@@ -63,82 +61,84 @@ const Sidebar = () => {
   ];
 
   const drawerContent = (
-    <Box sx={{ width: 240 }}>
-      <AppBar
-        position="static"
-        sx={{
-          bgcolor: "#fff",
-          color: "white",
-          padding: 2,
-          boxShadow: 1,
-        }}
-      >
-        <Box color="#f44" display="flex" justifyContent="space-between">
-          <Typography variant="h5">Pizza</Typography>
-          <MdMenuOpen style={{ fontSize: "24px" }} />
-        </Box>
-      </AppBar>
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          paddingY: "20px",
-          background: "#fff8f2",
-          mt: 0.1,
-        }}
-      >
-        <Pizza width={70} height={70} />
-      </Box>
-      <List
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "13px",
-          borderBottom: "2px solid #ececec",
-          paddingBottom: "25px",
-          justifyContent: "center",
-        }}
-      >
-        {sidebarItems.map((item) => (
-          <ListItem button key={item.name} sx={{ fontSize: "20px" }}>
-            <item.icon
-              style={{
-                fontSize: "26px",
-                color: "#575757",
-                paddingRight: "7px",
-              }}
-            />
-            <Link
-              to={item.path}
-              state={{ pageName: item.name }}
-              style={{ textDecoration: "none", color: "#575757" }}
-            >
-              {item.name}
-            </Link>
-          </ListItem>
-        ))}
-      </List>
-      <Button
-        onClick={handleLogOut}
-        sx={{
-          fontSize: "20px",
-          paddingY: "25px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CiLogin
-          style={{
-            color: "red",
-            fontWeight: "bolder",
-            paddingRight: "7px",
+    <Box overflow="hidden">
+      <Box sx={{ width: 240 }}>
+        <AppBar
+          position="static"
+          sx={{
+            bgcolor: "#fff",
+            color: "white",
+            padding: 2,
+            boxShadow: 1,
           }}
-        />
-        Log Out
-      </Button>
+        >
+          <Box color="#f44" display="flex" justifyContent="space-between">
+            <Typography variant="h5">Pizza</Typography>
+            <MdMenuOpen style={{ fontSize: "24px" }} />
+          </Box>
+        </AppBar>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingY: "20px",
+            background: "#fff8f2",
+            mt: 0.1,
+          }}
+        >
+          <Pizza width={70} height={70} />
+        </Box>
+        <List
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "13px",
+            borderBottom: "2px solid #ececec",
+            paddingBottom: "25px",
+            justifyContent: "center",
+          }}
+        >
+          {sidebarItems.map((item) => (
+            <ListItem button key={item.name} sx={{ fontSize: "20px" }}>
+              <item.icon
+                style={{
+                  fontSize: "26px",
+                  color: "#575757",
+                  paddingRight: "7px",
+                }}
+              />
+              <Link
+                to={item.path}
+                state={{ pageName: item.name }}
+                style={{ textDecoration: "none", color: "#575757" }}
+              >
+                {item.name}
+              </Link>
+            </ListItem>
+          ))}
+        </List>
+        <Button
+          onClick={handleLogOut}
+          sx={{
+            fontSize: "20px",
+            paddingY: "25px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CiLogin
+            style={{
+              color: "red",
+              fontWeight: "bolder",
+              paddingRight: "7px",
+            }}
+          />
+          Log Out
+        </Button>
+      </Box>
     </Box>
   );
 

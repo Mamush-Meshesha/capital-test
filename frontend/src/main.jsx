@@ -10,7 +10,7 @@ import Home from "./pages/Home";
 import Order from "./pages/Order";
 import AdminHome from "./pages/admin/HomeA";
 import AdminLayout from "./layouts/AdminLayout.jsx";
-import UserLayout from "./components/UserLayout.jsx";
+import UserLayout from "./layouts/UserLayout.jsx";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserDashBoard from "./pages/admin/User.jsx";
 import {

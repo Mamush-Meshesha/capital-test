@@ -1,6 +1,12 @@
 import axios from "axios";
 import { put, call, takeLatest } from "redux-saga/effects";
 import {
+  createMenuToppingFailure,
+  createMenuToppingRequest,
+  createMenuToppingSuccess,
+  fetchPermissionFailure,
+  fetchPermissionRequest,
+  fetchPermissionSuccess,
   managerFetchOrdersRequest,
   managerFetchOrdersSuccess,
   managerLoginFail,
@@ -10,6 +16,9 @@ import {
   managerRegisterFail,
   managerRegisterRequest,
   managerRegisterSuccess,
+  uploadImageImgurFailure,
+  uploadImageImgurRequest,
+  uploadImageImgurSuccess,
 } from "../slice/manaSlice";
 
 function* managerSignup(action) {
@@ -25,9 +34,9 @@ function* managerSignup(action) {
         withCredentials: true,
       }
     );
-    yield put(managerRegisterSuccess(res.data));
+      yield put(managerRegisterSuccess(res.data));
   } catch (error) {
-    yield put(managerRegisterFail(error.message));
+      yield put(managerRegisterFail(error.message));
   }
 }
 
@@ -55,12 +64,54 @@ function* fetchManagerOrders() {
   try {
     const res = yield call(
       axios.get,
-      "http://localhost:3000/api/customers/orders"
+      "http://localhost:3000/api/customers/orders", {
+        withCredentials: true
+      }
     );
     yield put(managerFetchOrdersSuccess(res.data));
     console.log(res.data);
   } catch (error) {
     yield put(managerOrdersFail(error.message));
+  }
+}
+
+function* fetchPermission() {
+  try {
+    const res = yield call(axios.get, "http://localhost:3000/api/permission", {
+      withCredentials: true
+    })
+    yield put(fetchPermissionSuccess(res.data))
+  } catch (error) {
+    yield put(fetchPermissionFailure(error.message))
+  }
+}
+
+function* createMenuTopping(action) {
+  try {
+    const res = yield call(axios.post, "http://localhost:3000/api/restaurant/menu", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true
+      
+    })
+    yield put(createMenuToppingSuccess(res.data))
+  } catch (error) {
+    yield put(createMenuToppingFailure(error.message))
+  }
+}
+
+function* uploadImage(action) {
+  try {
+    const res = yield call(axios.post, "http://localhost:3000/api/upload", action.payload, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    yield put(uploadImageImgurSuccess(res.data))
+  } catch (error) {
+    yield put(uploadImageImgurFailure(error.message))
   }
 }
 
@@ -76,4 +127,16 @@ function* watchFetchManagerOrder() {
   yield takeLatest(managerFetchOrdersRequest, fetchManagerOrders);
 }
 
-export { watchManagerLogin, watchManagerSignup, watchFetchManagerOrder };
+function* watchFetchPermission() {
+  yield takeLatest(fetchPermissionRequest, fetchPermission);
+}
+
+function* watchCreateMenuTopping() {
+  yield takeLatest(createMenuToppingRequest, createMenuTopping)
+}
+
+function* watchUploadImage() {
+  yield takeLatest(uploadImageImgurRequest, uploadImage)
+}
+
+export { watchManagerLogin, watchManagerSignup, watchFetchManagerOrder, watchFetchPermission, watchCreateMenuTopping, watchUploadImage };

@@ -38,6 +38,7 @@ const RegisterForm = ({ handleSignup }) => {
             </Typography>
             <ReusableForm
               fields={[
+                "name",
                 "email",
                 "password",
                 "passwordConfirm",
