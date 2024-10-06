@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { fetchManagerRequest, fetchRestaurantRequest } from "../../store/slice/adminSlice"
+import { createRestaurantRequest, fetchManagerRequest, fetchRestaurantRequest } from "../../store/slice/adminSlice"
 import AdminUser from "../../components/admin/User"
 const Restaurant = () => {
     const [data, setData] = useState([])
@@ -16,6 +16,7 @@ const dispatch = useDispatch()
         }))
         setData(transformedData)
     }, [restaurant])
+
     const title = "add restaurant"
     const columns = [
       { accessorKey: "name", header: "Name" },
@@ -24,18 +25,32 @@ const dispatch = useDispatch()
     ];
 
       const formFields = ["name","managerName", "location"]; 
-
+    useEffect(() => {
+    dispatch(fetchManagerRequest());
+},[dispatch])
     useEffect(() => {
         dispatch(fetchManagerRequest())
     },[dispatch])
     useEffect(() => {
         dispatch(fetchRestaurantRequest())
-    },[dispatch])
+    }, [dispatch])
+    
+       const handleSubmit = (formData) => {
+         // Dispatch an action to add a new restaurant
+         dispatch(createRestaurantRequest(formData));
+       };
+
     return (
-        <Box>
-            <AdminUser data={data} columns={columns} title={title} formFields={formFields} />
-        </Box>
-    )
+      <Box>
+        <AdminUser
+          data={data}
+          columns={columns}
+          title={title}
+          formFields={formFields}
+          onSubmit={handleSubmit}
+        />
+      </Box>
+    );
 }
 
 export default Restaurant

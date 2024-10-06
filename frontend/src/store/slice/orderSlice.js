@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   loading: false,
   orders: [],
+  selectedPizza: [],
+  selectedTopping: [],
   error: null,
 };
 export const orderSlice = createSlice({
@@ -20,8 +22,28 @@ export const orderSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    selectPizza: (state, action) => {
+      state.selectedPizza = action.payload;
+    },
+    clearSelectedPizza: (state) => {
+      state.selectedPizza = null;
+    },
+    selectedTopping: (state, action) => {
+      state.selectedTopping = action.payload;
+    },
+    clearSelectedTopping: (state, action) => {
+      state.selectedTopping = action.payload;
+    },
   },
 });
 
-export const { orderFail, orderRequest, orderSuccess } = orderSlice.actions;
+export const {
+  orderFail,
+  orderRequest,
+  orderSuccess,
+  clearSelectedPizza,
+  clearSelectedTopping,
+  selectPizza,
+  selectedTopping,
+} = orderSlice.actions;
 export default orderSlice.reducer;

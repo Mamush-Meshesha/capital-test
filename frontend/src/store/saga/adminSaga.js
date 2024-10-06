@@ -145,7 +145,7 @@ function* createRole(action) {
 
 function* createRestaurant(action) {
   try {
-    const res = yield call(axios.post, "", action.payload, {
+    const res = yield call(axios.post, "http://localhost:3000/api/restaurants", action.payload, {
       headers: {
           "Content-Type": "application/json"
       },

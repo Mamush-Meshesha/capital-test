@@ -16,6 +16,9 @@ import {
   managerRegisterFail,
   managerRegisterRequest,
   managerRegisterSuccess,
+  updateOrderStatus,
+  updateOrderStatusFailure,
+  updateOrderStatusSuccess,
   uploadImageImgurFailure,
   uploadImageImgurRequest,
   uploadImageImgurSuccess,
@@ -34,9 +37,9 @@ function* managerSignup(action) {
         withCredentials: true,
       }
     );
-      yield put(managerRegisterSuccess(res.data));
+    yield put(managerRegisterSuccess(res.data));
   } catch (error) {
-      yield put(managerRegisterFail(error.message));
+    yield put(managerRegisterFail(error.message));
   }
 }
 
@@ -64,8 +67,9 @@ function* fetchManagerOrders() {
   try {
     const res = yield call(
       axios.get,
-      "http://localhost:3000/api/customers/orders", {
-        withCredentials: true
+      "http://localhost:3000/api/customers/orders",
+      {
+        withCredentials: true,
       }
     );
     yield put(managerFetchOrdersSuccess(res.data));
@@ -78,40 +82,70 @@ function* fetchManagerOrders() {
 function* fetchPermission() {
   try {
     const res = yield call(axios.get, "http://localhost:3000/api/permission", {
-      withCredentials: true
-    })
-    yield put(fetchPermissionSuccess(res.data))
+      withCredentials: true,
+    });
+    yield put(fetchPermissionSuccess(res.data));
   } catch (error) {
-    yield put(fetchPermissionFailure(error.message))
+    yield put(fetchPermissionFailure(error.message));
   }
 }
 
 function* createMenuTopping(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/restaurant/menu", action.payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true
-      
-    })
-    yield put(createMenuToppingSuccess(res.data))
+    const res = yield call(
+      axios.post,
+      "http://localhost:3000/api/restaurant/menu",
+      action.payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    yield put(createMenuToppingSuccess(res.data));
   } catch (error) {
-    yield put(createMenuToppingFailure(error.message))
+    yield put(createMenuToppingFailure(error.message));
   }
 }
 
 function* uploadImage(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/upload", action.payload, {
-      headers: {
-        "Content-Type": "multipart/form-data"
+    const res = yield call(
+      axios.post,
+      "http://localhost:3000/api/upload",
+      action.payload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    })
+    );
 
-    yield put(uploadImageImgurSuccess(res.data))
+    yield put(uploadImageImgurSuccess(res.data));
   } catch (error) {
-    yield put(uploadImageImgurFailure(error.message))
+    yield put(uploadImageImgurFailure(error.message));
+  }
+}
+
+function* upadateOrderStatus(action) {
+  const { orderId,status , } = action.payload;
+  try {
+    const res = yield call(
+      axios.put,
+      `http://localhost:3000/api/order/${orderId}/status`,
+      { status },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+
+    yield put(updateOrderStatusSuccess({orderId,newStatus: res.data.status }));
+  } catch (error) {
+    yield put(updateOrderStatusFailure(error.message));
   }
 }
 
@@ -132,11 +166,23 @@ function* watchFetchPermission() {
 }
 
 function* watchCreateMenuTopping() {
-  yield takeLatest(createMenuToppingRequest, createMenuTopping)
+  yield takeLatest(createMenuToppingRequest, createMenuTopping);
 }
 
 function* watchUploadImage() {
-  yield takeLatest(uploadImageImgurRequest, uploadImage)
+  yield takeLatest(uploadImageImgurRequest, uploadImage);
 }
 
-export { watchManagerLogin, watchManagerSignup, watchFetchManagerOrder, watchFetchPermission, watchCreateMenuTopping, watchUploadImage };
+function* watchUpdateOrderStatus() {
+  yield takeLatest(updateOrderStatus, upadateOrderStatus);
+}
+
+export {
+  watchManagerLogin,
+  watchManagerSignup,
+  watchFetchManagerOrder,
+  watchFetchPermission,
+  watchCreateMenuTopping,
+  watchUploadImage,
+  watchUpdateOrderStatus
+};

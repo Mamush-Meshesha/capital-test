@@ -1,7 +1,29 @@
-import { AppBar, Box, Button, Grid2, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Grid,
+  Toolbar,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useState } from "react";
 import Pizza from "./Piza";
 
 const Header = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <AppBar
@@ -9,15 +31,15 @@ const Header = () => {
         sx={{ background: "transparent", borderBottom: "0", boxShadow: "none" }}
       >
         <Toolbar>
-          <Grid2
+          <Grid
             container
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            display="flex"
             sx={{ width: "100%" }}
           >
-            <Grid2 size="auto">
+            {/* Logo Section */}
+            <Grid item xs={6} sm="auto">
               <Box
                 sx={{
                   display: "flex",
@@ -26,30 +48,66 @@ const Header = () => {
                   alignItems: "center",
                 }}
               >
-                <Pizza hieght={50} width={50} />
-                <Typography variant="h4" color="#af5901">
+                <Pizza height={40} width={40} />
+                <Typography
+                  variant={{ xs: "h6", sm: "h5", md: "h4" }}
+                  color="#af5901"
+                  sx={{ display: { xs: "block" } }}
+                >
                   Pizza
                 </Typography>
               </Box>
-            </Grid2>
-            <Grid2 size="auto">
-              <Typography color="#504c48">Home</Typography>
-            </Grid2>
-            <Grid2>
-              <Typography color="#504c48">Orders</Typography>
-            </Grid2>
-            <Grid2 size="auto">
-              <Typography color="#504c48">Who we are</Typography>
-            </Grid2>
-            <Grid2 size="auto">
+            </Grid>
+
+            {/* Menu Items for Large Screens */}
+            <Grid
+              item
+              sx={{ display: { xs: "none", md: "flex" }, gap: "20px" }}
+            >
+              <Typography color="#504c48" sx={{ cursor: "pointer" }}>
+                Home
+              </Typography>
+              <Typography color="#504c48" sx={{ cursor: "pointer" }}>
+                Orders
+              </Typography>
+              <Typography color="#504c48" sx={{ cursor: "pointer" }}>
+                Who we are
+              </Typography>
+            </Grid>
+
+            {/* Register Button */}
+            <Grid item>
               <Button
                 variant="contained"
-                sx={{ hieght: "48px", background: "#ff9921" }}
+                sx={{ height: "40px", background: "#ff9921" }}
               >
                 Register
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+
+            {/* Hamburger Menu for Small Screens */}
+            <Grid item sx={{ display: { xs: "block", md: "none" } }}>
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={handleMenuOpen}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+
+          {/* Dropdown Menu for Small Screens */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleMenuClose}>Home</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Orders</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Who we are</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
     </>

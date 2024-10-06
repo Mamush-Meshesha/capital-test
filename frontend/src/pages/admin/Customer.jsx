@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 const Customer = () => {
     const [data, setData] = useState([])
     const dispatch = useDispatch()
-    const customers = useSelector((state) => state.admin.customers)
+    const customers = useSelector((state) => state.admin.customers) || []
     useEffect(() => {
         const transformedData = customers.map((user) => ({
             name: user.name,
@@ -53,19 +53,26 @@ const Customer = () => {
    const handleDelete = (id) => {
      console.log("Delete role with ID:", id);
    };
+  
+  const formFields = ["name", "phone_number", "email","password", "roleName"]; 
   const title = "add user"
     const columns = [
       { accessorKey: "name", header: "Name" },
       { accessorKey: "Phone", header: "Phone number" },
       { accessorKey: "email", header: "Email" },
-      { accessorKey: "action", header: "Actions" },
+      { accessorKey: "action", header: "Actions", minwidth: 30 },
     ];
+  
+  // const handleSubmit = (formData) => {
+  //   dispatch()
+  // }
     return (
       <Box>
         <AdminUser
           data={data} 
           columns={columns} 
           title={title}
+          formFields={formFields}
         />
       </Box>
     );

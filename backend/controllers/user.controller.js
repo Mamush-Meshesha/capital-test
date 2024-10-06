@@ -109,7 +109,7 @@ const customerOrder = async (req, res) => {
       if (item.toppings && item.toppings.length > 0) {
         const toppings = await Topping.findAll({
           where: {
-            id: item.toppings,
+            name: item.toppings,
             menu_id: item.menuId, 
           },
           transaction,
@@ -153,8 +153,50 @@ const customerOrder = async (req, res) => {
   }
 };
 
+const fetchOrderEnum = async (req, res) => {
+  const orederStatus = ["Preparing", "Ready", "Delivered"];
+    return res.status(200).json({ status: orederStatus });
+
+}
+
+const updateOrderStatus = async (req, res) => {
+  
+  const { orderId } = req.params
+  const { status } = req.body
+  
+  try {
+    const order = await Order.findByPk(orderId)
+    
+    if (!order) {
+      return res.status(404).json({message: "order not found"})
+    }
+    const validStatus = ["Preparing", "Ready", "Delivered"];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({message: "invalid status"})
+    }
+
+    order.status = status
+    await order.save()
+
+    return res.status(200).json({
+      message: "Order status updated successfully",
+      orderId: order.id,
+      newStatus: order.status,
+    });
+  } catch (error) {
+        return res
+          .status(500)
+          .json({
+            message: "An error occurred while updating the order status",
+          });
+
+  }
+}
+
 module.exports = {
     customerSignup,
     customerLogin,
-    customerOrder
+  customerOrder,
+  fetchOrderEnum,
+    updateOrderStatus
 }

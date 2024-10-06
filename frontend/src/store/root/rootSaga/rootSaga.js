@@ -3,11 +3,13 @@ import {
   watchCustomerLogin,
   watchCustomerSignup,
   watchFetchOrderHistory,
+  watchfetchOrderStatus,
 } from "../../saga/customerSaga";
 import {
   watchAdminLogin,
   watchAdminLogout,
   watchAdminSignup,
+  watchCreateRestaurant,
   watchCreateRoleWithPermision,
   watchFetchCustomer,
   watchFetchManager,
@@ -20,6 +22,7 @@ import {
   watchFetchPermission,
   watchManagerLogin,
   watchManagerSignup,
+  watchUpdateOrderStatus,
   watchUploadImage,
 } from "../../saga/managerSaga";
 import { watchFetchPizza, watchFetchTopRestaurant } from "../../saga/pizzaSaga";
@@ -46,7 +49,10 @@ function* rootSaga() {
     watchFetchPizza(),
     watchOrderPizza(),
     watchFetchTopRestaurant(),
-    watchFetchOrderHistory()
+    watchFetchOrderHistory(),
+    watchfetchOrderStatus(),
+    watchUpdateOrderStatus(),
+    watchCreateRestaurant()
   ]);
 }
 

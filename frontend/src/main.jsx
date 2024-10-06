@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Order from "./pages/Order";
 import AdminHome from "./pages/admin/HomeA";
-import AdminLayout from "./layouts/AdminLayout.jsx";
+import AdminLayout from "./components/auth/AdminLayout.jsx";
 import UserLayout from "./layouts/UserLayout.jsx";
 import AdminLogin from "./pages/admin/AdminLogin";
 import UserDashBoard from "./pages/admin/User.jsx";
@@ -37,19 +37,21 @@ const router = createBrowserRouter(
       <Route path="manager/login" element={<ManagerLogin />} />
 
       {/* User Routes */}
-      <Route path="" element={<UserLayout />}>
+      <Route element={<UserLayout />}>
+        {" "}
+        {/* Wrap the user-specific layout */}
         <Route path="order" element={<Order />} />
       </Route>
 
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminHome />} />
-        <Route path="order" element={<UserDashBoard />} />
-        <Route path="role" element={<Role />} />
-        <Route path="users" element={<Customer />} />
-        <Route path="manager" element={<Managers />} />
-        <Route path="restaurant" element={<Restaurant />} />
-        <Route path="manager/signup" element={<ManagerSignup />} />
+        <Route index element={<AdminHome />} /> {/* Admin Home */}
+        <Route path="/admin/order" element={<UserDashBoard />} />
+        <Route path="/admin/role" element={<Role />} />
+        <Route path="/admin/users" element={<Customer />} />
+        <Route path="/admin/manager" element={<Managers />} />
+        <Route path="/admin/restaurant" element={<Restaurant />} />
+        <Route path="/admin/manager/signup" element={<ManagerSignup />} />
       </Route>
     </Route>
   )

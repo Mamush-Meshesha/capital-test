@@ -151,7 +151,8 @@ const Sidebar = () => {
             aria-label="open drawer"
             onClick={toggleDrawer}
             edge="start"
-            sx={{ ml: 2 }}
+            
+            sx={{ ml: 1 , mt: 1, zIndex: 100 , top: "0px", position: "absolute"}}
           >
             <MdMenuOpen />
           </IconButton>
@@ -187,8 +188,11 @@ const Sidebar = () => {
           {drawerContent}
         </Drawer>
       )}
-      <Box component="main" sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ background: "#ffffff", boxShadow: 1 }}>
+      <Box component="main" sx={{ flexGrow: 1, overflow: "hidden" }}>
+        <AppBar position="static" sx={{
+          background: "#ffffff", boxShadow: 1, paddingLeft: "27px", width: {
+          xs: "100%"
+        } }} >
           <Toolbar>
             <Typography
               variant="h5"
@@ -213,7 +217,7 @@ const Sidebar = () => {
           </Toolbar>
         </AppBar>
         <Box mt={0.2} bgcolor="#f2f2f2" sx={{ height: "93vh" }}>
-          <Box padding="20px">
+          <Box padding="20px" >
             <Outlet />
           </Box>
         </Box>

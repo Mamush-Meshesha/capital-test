@@ -10,7 +10,8 @@ const initialState = {
   roles: [],
   permissions: [],
   menuTopping: [],
-  image:[]
+  image: [],
+  updatedStatus: []
 };
 
 export const ManagerSlice = createSlice({
@@ -106,6 +107,17 @@ export const ManagerSlice = createSlice({
     uploadImageImgurFailure: (state, action) => {
       state.loading = false
       state.error = action.payload
+    },
+    updateOrderStatus: (state) => {
+      state.loading = true
+    },
+    updateOrderStatusSuccess: (state, action) => {
+      state.loading = false
+      state.updatedStatus = action.payload
+    },
+    updateOrderStatusFailure: (state,action) =>{
+      state.loading = false
+      state.error = action.payload
     }
   },
 });
@@ -133,6 +145,9 @@ export const {
   createMenuToppingSuccess,
   uploadImageImgurFailure,
   uploadImageImgurRequest,
-  uploadImageImgurSuccess
+  uploadImageImgurSuccess,
+  updateOrderStatus,
+  updateOrderStatusFailure,
+  updateOrderStatusSuccess
 } = ManagerSlice.actions;
 export default ManagerSlice.reducer;

@@ -2,8 +2,8 @@ import { Box, Button, Checkbox, Container, FormControlLabel, Grid2, TextField, T
 import { Link,  useNavigate } from "react-router-dom";
 import Pizza from "../../components/Piza";
 import BackGround from "../../components/auth/Background";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {  useEffect, useState } from "react";
+import { useDispatch,  } from "react-redux";
 import { adminLoginRequest } from "../../store/slice/adminSlice";
 
 const AdminLogin = () => {
@@ -21,9 +21,10 @@ const AdminLogin = () => {
             password
         }
 
-        dispatch(adminLoginRequest(data))
+      dispatch(adminLoginRequest(data))
+      navigate("/admin")
     }
-const isAdminLogin = useSelector((state) => state.admin.isAdminLogin);
+const isAdminLogin = JSON.parse(localStorage.getItem("isAdminLogin"));
 
 useEffect(() => {
   if (isAdminLogin) {

@@ -6,7 +6,8 @@ const initialState = {
   registeredUser: [],
   loading: false,
   error: null,
-  orderHistory: []
+  orderHistory: [],
+  orderStatus: []
 };
 
 export const userSlice = createSlice({
@@ -52,6 +53,17 @@ export const userSlice = createSlice({
     orderHistoryFailure: (state, action) => {
       state.loading = false,
       state.error = action.payload
+    },
+    orderStatusRequest: (state) => {
+      state.loading = false
+    },
+    orderStatusSuccess: (state, action) => {
+      state.loading = false,
+        state.orderStatus = action.payload
+    },
+    orderStatusFailure: (state, action) => {
+      state.loading = false,
+        state.error = action.payload
     }
   },
 });
@@ -66,7 +78,10 @@ export const {
   registerSuccess,
   orderHistoryFailure,
   orderHistoryRequest,
-  orderHistorySuccess
+  orderHistorySuccess,
+  orderStatusFailure,
+  orderStatusRequest,
+  orderStatusSuccess
 } = userSlice.actions;
 
 export default userSlice.reducer

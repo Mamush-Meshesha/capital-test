@@ -1,30 +1,33 @@
 import AdminUser from "../../components/admin/User";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { managerFetchOrdersRequest } from "../../store/slice/manaSlice";
-import { MenuItem, FormControl, Select,  } from "@mui/material";
+import { managerFetchOrdersRequest, updateOrderStatus } from "../../store/slice/manaSlice";
+import { MenuItem, FormControl, Select, } from "@mui/material";
+import {orderStatusRequest} from "../../store/slice/userSlice"
 
 const UserDashBoard = () => {
   const dispatch = useDispatch();
-  const [status, setStatus] = useState("Preparing"); 
-  const statuses = ["Preparing", "Ready", "Delivered"]; 
-
-  const orders = useSelector((state) => state.manager.orders);
-  const [data, setData] = useState([]);
-
+  const statuses = useSelector((state) => state.customer.orderStatus.status) || []
+  console.log(statuses)
+  const orders = useSelector((state) => state.manager.orders) || []
+const [data,setData] = useState([])
   const handleStatusChange = (event, orderId) => {
     const newStatus = event.target.value;
-
     console.log(`Change status of order ${orderId} to ${newStatus}`);
 
-    setStatus(newStatus);
+    dispatch(updateOrderStatus({ orderId, status: newStatus }));
   };
+
+
+  useEffect(() => {
+    dispatch(orderStatusRequest());
+  }, [dispatch])
 
   const renderStatusDropdown = (order) => {
     return (
       <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
         <Select
-          value={status}
+          value={order.status}
           onChange={(event) => handleStatusChange(event, order.id)}
           sx={{
             backgroundColor:
@@ -32,25 +35,25 @@ const UserDashBoard = () => {
                 ? "#ffcc80"
                 : status === "Ready"
                 ? "#aed581"
-                : "#90caf9", // Apply background color based on status
+                : "#90caf9", 
             fontSize: "0.875rem",
             height: "35px",
-            borderRadius: "8px", // Rounded corners for a smooth look
-            border: "none", // Remove border
-            boxShadow: "none", // Remove any shadow
+            borderRadius: "8px", 
+            border: "none",
+            boxShadow: "none", 
             "&:hover": {
               backgroundColor:
                 status === "Preparing"
                   ? "#ffa726"
                   : status === "Ready"
                   ? "#81c784"
-                  : "#64b5f6", // Darker background on hover
+                  : "#64b5f6", 
             },
             "& .MuiSelect-select": {
-              padding: "8px", // Adjust padding inside dropdown
+              padding: "8px",
             },
           }}
-          disableUnderline 
+          disableUnderline
           displayEmpty
         >
           {statuses.map((status) => (

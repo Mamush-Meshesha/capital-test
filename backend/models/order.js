@@ -1,3 +1,5 @@
+const { Sequelize } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define(
     "Order",
@@ -24,8 +26,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.STRING,
+        type: Sequelize.ENUM("Preparing", "Ready", "Delivered"),
         allowNull: false,
+        defaultValue: "Preparing",
       },
       created_at: {
         type: DataTypes.DATE,

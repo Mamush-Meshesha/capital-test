@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Box, Button, Card, Container, Grid2, Typography } from "@mui/material"
-const CardCom = ({ handleOrderClick, pizzaData }) => {
+const CardCom = ({ handlePizzaSelect, pizzaData }) => {
   return (
     <Box>
       <Grid2 container spacing={4}>
@@ -70,7 +70,7 @@ const CardCom = ({ handleOrderClick, pizzaData }) => {
                         background: "#ff9921",
                         fontSize: "35px",
                       }}
-                      onClick={() => handleOrderClick(pizza)}
+                      onClick={() => handlePizzaSelect(pizza)}
                     >
                       Order
                     </Button>
@@ -85,7 +85,7 @@ const CardCom = ({ handleOrderClick, pizzaData }) => {
                     >
                       <Box
                         component="img"
-                        src="/pro.jpg" 
+                        src="/pro.jpg"
                         sx={{
                           width: "80px",
                           height: "80px",
@@ -109,3 +109,12 @@ const CardCom = ({ handleOrderClick, pizzaData }) => {
 };
 
 export default CardCom
+
+  // const handleToppingChange = (toppingName) => {
+  //   setSelectedToppings((prevSelected) => {
+  //     const isSelected = prevSelected.includes(toppingName);
+  //     return isSelected
+  //       ? prevSelected.filter((name) => name !== toppingName) // Remove if already selected
+  //       : [...prevSelected, toppingName]; // Add if not selected
+  //   });
+  // };

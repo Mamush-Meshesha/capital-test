@@ -12,68 +12,85 @@ import {
 import Header from "../components/Header";
 import { FiArrowUpRight } from "react-icons/fi";
 import Related from "../components/Related";
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { orderRequest } from "../store/slice/orderSlice";
 
 const Order = () => {
-  const location = useLocation();
-  const { name, toppings, price, photo, restaurantId, menuId } = location.state;
+
+  
+
   const [quantity, setQuantity] = useState(1);
   const [isOrderPopupOpen, setIsOrderPopupOpen] = useState(false);
-  const [selectedToppings, setSelectedToppings] = useState([]);
+  const [selectedToppings, setSelectedToppings] = useState([]); // Manage selected toppings
 
-  const totalPrice = (price * quantity).toFixed(2);
+
   const dispatch = useDispatch();
 
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
 
-  const decrementQuantity = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
+  const selectedPizza = useSelector((state) => state.orders.selectedPizza);
 
-  const handleToppingChange = (toppingId) => {
-    setSelectedToppings((prev) =>
-      prev.includes(toppingId)
-        ? prev.filter((id) => id !== toppingId)
-        : [...prev, toppingId]
-    );
-  };
-  console.log(toppings)
+    useEffect(() => {
+      // Initialize selectedToppings with all toppings when the component mounts
+      if (selectedPizza && selectedPizza.Toppings) {
+        setSelectedToppings(
+          selectedPizza.Toppings.map((topping) => topping.name)
+        );
+      }
+    }, [selectedPizza]);
 
-  const handleSendOrder = () => {
-    setIsOrderPopupOpen(true);
-    const data = {
-      restaurantId,
-      items: [
-        {
-          menuId,
-          name,
-          price,
-          quantity,
-          toppings,
-        },
-      ],
+    const handleToppingChange = (toppingName) => {
+      setSelectedToppings((prevToppings) =>
+        prevToppings.includes(toppingName)
+          ? prevToppings.filter((t) => t !== toppingName)
+          : [...prevToppings, toppingName]
+      );
     };
 
-    dispatch(orderRequest(data));
-  };
+    const handleClosePopup = () => {
+      setIsOrderPopupOpen(false);
+    };
 
-  const handleClosePopup = () => {
-    setIsOrderPopupOpen(false);
-  };
+    const incrementQuantity = () => {
+      setQuantity((prev) => prev + 1);
+    };
+
+    const decrementQuantity = () => {
+      setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+    };
+
+    const totalPrice = selectedPizza
+      ? (selectedPizza.price * quantity).toFixed(2)
+      : "0.00";
+
+    const handleOrder = () => {
+      if (!selectedPizza) return;
+
+      const orderData = {
+        restaurantId: selectedPizza.restaurants_id,
+        items: [
+          {
+            menuId: selectedPizza.id,
+            name: selectedPizza.name,
+            price: selectedPizza.price,
+            quantity: quantity,
+            toppings: selectedToppings,
+          },
+        ],
+      };
+
+      dispatch(orderRequest(orderData));
+      setIsOrderPopupOpen(true);
+    };
 
   return (
     <Box>
       <Header />
       <Box bgcolor="#fff8f1">
-          <Box
+        <Box
           sx={{
             minHeight: "72vh",
             width: "100%",
@@ -117,7 +134,7 @@ const Order = () => {
                     >
                       <Box
                         component="img"
-                        src={photo}
+                        src={selectedPizza.image_url}
                         width="80%"
                         height="80%"
                         borderRadius="50%"
@@ -143,7 +160,7 @@ const Order = () => {
                     >
                       <Box
                         component="img"
-                        src={photo}
+                        src={selectedPizza.image_url}
                         width="80%"
                         height="80%"
                         borderRadius="50%"
@@ -166,33 +183,30 @@ const Order = () => {
                     }}
                   >
                     <Box>
-                      <Typography variant="h2" sx={{ fontWeight: "bold" }}>
-                        {name}
-                      </Typography>
-                      {/* Render toppings checkboxes */}
-                      <Box>
-                        <Typography variant="h6">Select Toppings:</Typography>
-                        {toppings && toppings.length > 0 ? (
-                          toppings.map((topping, index) => (
-                            <ListItem key={index} sx={{ padding: 0 }}>
-                              <ListItemIcon>
-                                <Checkbox
-                                  edge="start"
-                                  checked={selectedToppings.includes(topping)} 
-                                  onChange={() => handleToppingChange(topping)} 
-                                  tabIndex={-1}
-                                  disableRipple
-                                />
-                              </ListItemIcon>
-                              <ListItemText primary={topping} />{" "}
-                            </ListItem>
-                          ))
-                        ) : (
-                          <Typography variant="body1">
-                            No toppings available.
-                          </Typography>
-                        )}
-                      </Box>
+                      {selectedPizza && selectedPizza.Toppings ? (
+                        selectedPizza.Toppings.map((topping) => (
+                          <ListItem key={topping.id} sx={{ padding: 0 }}>
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={selectedToppings.includes(
+                                  topping.name
+                                )}
+                                onChange={() =>
+                                  handleToppingChange(topping.name)
+                                }
+                                tabIndex={-1}
+                                disableRipple
+                              />
+                            </ListItemIcon>
+                            <ListItemText primary={topping.name} />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography variant="body1">
+                          No toppings available.
+                        </Typography>
+                      )}
                     </Box>
                     <Box
                       display="flex"
@@ -220,15 +234,15 @@ const Order = () => {
                     </Box>
                     <Box>
                       <Button
-                        onClick={handleSendOrder}
+                        onClick={handleOrder}
                         variant="contained"
                         sx={{
-                          height: "188px",
+                          height: "88px",
                           background: "#ff9921",
                           width: "100%",
                           display: "flex",
                           justifyContent: "space-between",
-                          padding: "20px",
+
                           borderRadius: "12px",
                         }}
                       >
@@ -312,7 +326,6 @@ const Order = () => {
         </Box>
       </Box>
     </Box>
-    
   );
 };
 

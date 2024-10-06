@@ -91,7 +91,6 @@ const ReusableForm = ({
   roleOptions = [],
   permission = [],
   managerOptions = [],
-  name=[]
 }) => {
   const formSchema = createFormSchema(fields);
 
@@ -140,37 +139,26 @@ const ReusableForm = ({
                 );
               case "managerName":
                 return (
-                  <>
-                    <FormControl fullWidth error={!!errors[field]}>
-                      <InputLabel id="manager-select-label">Manager</InputLabel>
-                      <Select
-                        labelId="manager-select-label"
-                        value={
-                          managerOptions.find(
-                            (option) => option.value === value
-                          )
-                            ? value
-                            : ""
-                        }
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          onChange(selectedValue); 
-                        }}
-                        label="Manager"
-                      >
-                        {managerOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors[field] && (
-                        <Typography variant="caption" color="error">
-                          {errors[field]?.message}
-                        </Typography>
-                      )}
-                    </FormControl>
-                  </>
+                  <FormControl fullWidth error={!!errors[field]}>
+                    <InputLabel id="manager-select-label">Manager</InputLabel>
+                    <Select
+                      labelId="manager-select-label"
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                      label="Manager"
+                    >
+                      {managerOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors[field] && (
+                      <Typography variant="caption" color="error">
+                        {errors[field]?.message}
+                      </Typography>
+                    )}
+                  </FormControl>
                 );
 
               case "roleName":
@@ -188,9 +176,9 @@ const ReusableForm = ({
                         onChange={(e) => {
                           const selectedValue = e.target.value;
                           if (selectedValue === "new") {
-                            onChange(""); 
+                            onChange("");
                           } else {
-                            onChange(selectedValue); 
+                            onChange(selectedValue);
                           }
                         }}
                         label="Role"
@@ -214,7 +202,7 @@ const ReusableForm = ({
                         fullWidth
                         label="New Role Name"
                         value={value}
-                        onChange={(e) => onChange(e.target.value)} 
+                        onChange={(e) => onChange(e.target.value)}
                         error={!!errors[field]}
                         helperText={errors[field]?.message}
                       />
@@ -233,12 +221,12 @@ const ReusableForm = ({
                             key={perm}
                             control={
                               <Checkbox
-                                checked={value.includes(perm)} 
+                                checked={value.includes(perm)}
                                 onChange={(e) => {
                                   const updatedPermissions = e.target.checked
-                                    ? [...value, perm] 
-                                    : value.filter((p) => p !== perm); 
-                                  onChange(updatedPermissions); 
+                                    ? [...value, perm]
+                                    : value.filter((p) => p !== perm);
+                                  onChange(updatedPermissions);
                                 }}
                                 name={perm}
                               />

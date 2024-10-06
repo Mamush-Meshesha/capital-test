@@ -5,6 +5,9 @@ import {
   orderHistoryFailure,
   orderHistoryRequest,
   orderHistorySuccess,
+  orderStatusFailure,
+  orderStatusRequest,
+  orderStatusSuccess,
   registerFailure,
   registerStart,
   registerSuccess,
@@ -22,7 +25,7 @@ function* loginCustomer(action) {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true
+        withCredentials: true,
       }
     );
     yield put(loginSuccess(res.data));
@@ -41,7 +44,7 @@ function* registerCustomer(action) {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true
+        withCredentials: true,
       }
     );
     yield put(registerSuccess(res.data));
@@ -52,12 +55,25 @@ function* registerCustomer(action) {
 
 function* fetchOrderHistory() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/order-history", {
-      withCredentials: true
-    })
-    yield put(orderHistorySuccess(res.data))
+    const res = yield call(
+      axios.get,
+      "http://localhost:3000/api/order-history",
+      {
+        withCredentials: true,
+      }
+    );
+    yield put(orderHistorySuccess(res.data));
   } catch (error) {
-    yield put(orderHistoryFailure(error.message))
+    yield put(orderHistoryFailure(error.message));
+  }
+}
+
+function* fetchOrderStatus() {
+  try {
+    const res = yield call(axios.get, "http://localhost:3000/api/order-status");
+    yield put(orderStatusSuccess(res.data));
+  } catch (error) {
+    yield put(orderStatusFailure(error.message));
   }
 }
 
@@ -71,6 +87,15 @@ function* watchCustomerSignup() {
 }
 
 function* watchFetchOrderHistory() {
-  yield takeLatest(orderHistoryRequest, fetchOrderHistory)
+  yield takeLatest(orderHistoryRequest, fetchOrderHistory);
 }
-export { watchCustomerLogin, watchCustomerSignup, watchFetchOrderHistory };
+
+function* watchfetchOrderStatus() {
+  yield takeLatest(orderStatusRequest, fetchOrderStatus);
+}
+export {
+  watchCustomerLogin,
+  watchCustomerSignup,
+  watchFetchOrderHistory,
+  watchfetchOrderStatus,
+};

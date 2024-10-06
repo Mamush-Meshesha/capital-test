@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: false,
-  isAdminLogin: false,
+  isAdminLogin: localStorage.getItem("isAdminLogin")
+    ? JSON.parse(localStorage.getItem("isAdminLogin"))
+    : null,
   isAdmin: null,
   error: null,
   registeredAdmin: [],
@@ -10,7 +12,7 @@ const initialState = {
   managers: [],
   restaurant: [],
   rolePermission: [],
-  createRestaurants: []
+  createRestaurants: [],
 };
 
 export const adminSlice = createSlice({
@@ -24,7 +26,7 @@ export const adminSlice = createSlice({
     adminLoginSuccess: (state, action) => {
       state.loading = false;
       state.isAdminLogin = true;
-      state.isAdmin = action.payload;
+      state.isAdmin = localStorage.setItem("isAdminLogin", JSON.stringify(action.payload));
     },
     adminLoginFail: (state, action) => {
       state.loading = false;
@@ -37,7 +39,7 @@ export const adminSlice = createSlice({
     adminLogoutSuccess: (state) => {
       state.loading = false;
       state.isAdminLogin = false;
-      state.isAdmin = null;
+      state.isAdmin = localStorage.removeItem("isAdminLogin")
     },
     adminLogoutFail: (state, action) => {
       state.loading = false;
