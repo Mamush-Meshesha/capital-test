@@ -1,120 +1,116 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, Card, Container, Grid2, Typography } from "@mui/material"
+import { Box, Button, Card,  Grid, Typography } from "@mui/material";
+
 const CardCom = ({ handlePizzaSelect, pizzaData }) => {
   return (
-    <Box>
-      <Grid2 container spacing={4}>
+    <Box sx={{ }}>
+      <Grid container spacing={4}>
         {pizzaData.map((pizza) => (
-          <Grid2 item xs={12} sm={6} md={4} lg={3} key={pizza.id}>
-            {" "}
+          <Grid item xs={12} sm={6} md={6} lg={4} key={pizza.id}>
             <Card
               sx={{
-                height: "auto",
+                height: "100%",
                 borderRadius: "23px",
-                marginBottom: "20px",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              <Container>
+              <Box sx={{ p: 2 }}>
                 <Box
                   sx={{
                     display: "flex",
                     justifyContent: "center",
-                    padding: "30px",
+                    mb: 2,
                   }}
                 >
                   <Box
-                    width="320px"
-                    height="320px"
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
+                      width: "300px",
+                      paddingTop: "300px",
+                      position: "relative",
                       background: "#fbe6cc",
                       borderRadius: "50%",
-                      justifyContent: "center",
                     }}
                   >
                     <Box
                       component="img"
                       src={pizza.image_url}
-                      width="80%"
-                      borderRadius="50%"
-                      sx={{ objectFit: "fill" }}
+                      sx={{
+                        position: "absolute",
+                        top: "10%",
+                        left: "10%",
+                        width: "80%",
+                        height: "80%",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
                     />
                   </Box>
                 </Box>
-                <Box>
-                  <Box>
-                    <Typography variant="h3" color="#000000">
-                      {pizza.name}{" "}
+                <Typography variant="h5" color="#000000" gutterBottom>
+                  {pizza.name}
+                </Typography>
+                <Typography variant="body2" color="#6f6f6f" gutterBottom>
+                  {pizza.Toppings.map((topping) => topping.name).join(", ")}
+                </Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  py={2}
+                  borderBottom="4px solid #d8d8d8"
+                >
+                  <Typography variant="h6" color="green">
+                    {pizza.price}
+                    <Typography
+                      component="sup"
+                      variant="caption"
+                      color="textPrimary"
+                    >
+                      Birr
                     </Typography>
-                    <Typography variant="body1" color="#6f6f6f">
-                      {pizza.Toppings.map((topping) => topping.name).join(", ")}
-                    </Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    padding="20px"
-                    borderBottom="4px solid #d8d8d8"
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      background: "#ff9921",
+                      "&:hover": {
+                        background: "#e68a1e",
+                      },
+                    }}
+                    onClick={() => handlePizzaSelect(pizza)}
                   >
-                    <Typography variant="h2" color="green">
-                      {pizza.price}
-                      <sup style={{ fontSize: "20px", color: "black" }}>
-                        Birr
-                      </sup>
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        height: "48px",
-                        background: "#ff9921",
-                        fontSize: "35px",
-                      }}
-                      onClick={() => handlePizzaSelect(pizza)}
-                    >
-                      Order
-                    </Button>
-                  </Box>
-                  <Box>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      gap="10px"
-                      padding="30px"
-                    >
-                      <Box
-                        component="img"
-                        src="/pro.jpg"
-                        sx={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "40px",
-                          objectPosition: "contained",
-                        }}
-                      />
-                      <Typography variant="h5" fontWeight="400">
-                        {pizza.Restaurant.name}{" "}
-                      </Typography>
-                    </Box>
-                  </Box>
+                    Order
+                  </Button>
                 </Box>
-              </Container>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="flex-start"
+                  gap="10px"
+                  mt={2}
+                >
+                  <Box
+                    component="img"
+                    src="/pro.jpg"
+                    sx={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <Typography variant="body2" fontWeight="400">
+                    {pizza.Restaurant.name}
+                  </Typography>
+                </Box>
+              </Box>
             </Card>
-          </Grid2>
+          </Grid>
         ))}
-      </Grid2>
+      </Grid>
     </Box>
   );
 };
 
-export default CardCom
-
-  // const handleToppingChange = (toppingName) => {
-  //   setSelectedToppings((prevSelected) => {
-  //     const isSelected = prevSelected.includes(toppingName);
-  //     return isSelected
-  //       ? prevSelected.filter((name) => name !== toppingName) // Remove if already selected
-  //       : [...prevSelected, toppingName]; // Add if not selected
-  //   });
-  // };
+export default CardCom;
