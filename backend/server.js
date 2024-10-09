@@ -10,6 +10,7 @@ const cors = require("cors");
 const fs = require("fs");
 const multer = require("multer");
 const axios = require("axios");
+const { Sequelize } = require("sequelize");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
