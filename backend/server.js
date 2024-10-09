@@ -7,10 +7,7 @@ const managerRoute = require("./routes/manager.route");
 const userRoute = require("./routes/user.route");
 const pizzaRoute = require("./routes/pizza.route");
 const cors = require("cors");
-const fs = require("fs");
-const multer = require("multer");
-const axios = require("axios");
-const { Sequelize } = require("sequelize");
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://capital-test-one.vercel.app",
     credentials: true,
   })
 );
