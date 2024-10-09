@@ -58,9 +58,7 @@ const Home = () => {
       >
         <Header />
 
-        <Container
-         maxWidth="xl"
-        >
+        <Container maxWidth="xl">
           <Box
             sx={{
               display: "flex",
@@ -109,10 +107,9 @@ const Home = () => {
             <Box
               width={{
                 xs: "100%",
-                sm: "50%",
-                
+                sm: "60%",
               }}
-              sx={{ position: "relative", marginTop: "60px", margin: "0 auto" }}
+              sx={{ position: "relative", marginTop: "70px" }}
             >
               <TextField
                 placeholder="Search"
@@ -207,7 +204,7 @@ const Home = () => {
               justifyContent: "center",
               flexDirection: "column",
               width: "100%",
-              paddingY:"100px"
+              paddingY: "50px",
             }}
           >
             <Box width="100%">
@@ -237,7 +234,7 @@ const Home = () => {
               display: "flex",
               flexDirection: "column",
               width: "100%",
-              paddingY: "100px"
+              paddingY: "100px",
             }}
           >
             <Typography variant="h2" paddingBottom="15px">
@@ -261,7 +258,10 @@ const Home = () => {
               paddingY: "100px",
             }}
           >
-            <Fasting />
+            <CardCom
+              handlePizzaSelect={handlePizzaSelect}
+              pizzaData={pizzaData}
+            />
           </Box>
 
           <Box

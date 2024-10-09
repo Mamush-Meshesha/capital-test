@@ -4,6 +4,7 @@ import {
   watchCustomerSignup,
   watchFetchOrderHistory,
   watchfetchOrderStatus,
+  watchLogout,
 } from "../../saga/customerSaga";
 import {
   watchAdminLogin,
@@ -52,7 +53,8 @@ function* rootSaga() {
     watchFetchOrderHistory(),
     watchfetchOrderStatus(),
     watchUpdateOrderStatus(),
-    watchCreateRestaurant()
+    watchCreateRestaurant(),
+    watchLogout()
   ]);
 }
 

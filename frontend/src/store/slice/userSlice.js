@@ -27,10 +27,6 @@ export const userSlice = createSlice({
       state.error = action.payload;
       state.isUserLogin = false;
     },
-    logoutSuccess: (state) => {
-      state.user = null;
-      state.isUserLogin = false;
-    },
 
     // register slice
     registerStart: (state) => {
@@ -43,6 +39,16 @@ export const userSlice = createSlice({
       (state.loading = false), (state.error = action.payload);
     },
 
+    logoutRequest: (state) => {
+      state.loading = true
+    },
+    logoutSuccess: (state, action) => {
+      state.user = action.payload
+    },
+    logoutFailure: (state, action) => { 
+      state.loading = false,
+        state.error = action.payload
+    },
     orderHistoryRequest: (state) => {
       state.loading = true
     },
@@ -81,7 +87,9 @@ export const {
   orderHistorySuccess,
   orderStatusFailure,
   orderStatusRequest,
-  orderStatusSuccess
+  orderStatusSuccess,
+  logoutFailure,
+  logoutRequest
 } = userSlice.actions;
 
 export default userSlice.reducer

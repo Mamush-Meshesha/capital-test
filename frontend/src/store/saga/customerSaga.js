@@ -2,6 +2,9 @@ import {
   loginFailure,
   loginStart,
   loginSuccess,
+  logoutFailure,
+  logoutRequest,
+  logoutSuccess,
   orderHistoryFailure,
   orderHistoryRequest,
   orderHistorySuccess,
@@ -19,7 +22,7 @@ function* loginCustomer(action) {
   try {
     const res = yield call(
       axios.post,
-      "http://localhost:3000/api/customer/login",
+      "https://capital-test.onrender.com/api/customer/login",
       action.payload,
       {
         headers: {
@@ -38,7 +41,7 @@ function* registerCustomer(action) {
   try {
     const res = yield call(
       axios.post,
-      "http://localhost:3000/api/customers/signup",
+      "https://capital-test.onrender.com/api/customers/signup",
       action.payload,
       {
         headers: {
@@ -53,11 +56,20 @@ function* registerCustomer(action) {
   }
 }
 
+function* logoutUser(action) {
+  try {
+    const res = yield call(axios.post, "https://capital-test.onrender.com/api/customer/logout", action.payload)
+    yield put(logoutSuccess(res.data));
+  } catch (error) {
+    yield put(logoutFailure(error.message))
+  }
+}
+
 function* fetchOrderHistory() {
   try {
     const res = yield call(
       axios.get,
-      "http://localhost:3000/api/order-history",
+      "https://capital-test.onrender.com/api/order-history",
       {
         withCredentials: true,
       }
@@ -70,7 +82,7 @@ function* fetchOrderHistory() {
 
 function* fetchOrderStatus() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/order-status");
+    const res = yield call(axios.get, "https://capital-test.onrender.com/api/order-status");
     yield put(orderStatusSuccess(res.data));
   } catch (error) {
     yield put(orderStatusFailure(error.message));
@@ -86,6 +98,10 @@ function* watchCustomerSignup() {
   yield takeLatest(registerStart, registerCustomer);
 }
 
+function* watchLogout() {
+  yield takeLatest(logoutRequest, logoutUser);
+}
+
 function* watchFetchOrderHistory() {
   yield takeLatest(orderHistoryRequest, fetchOrderHistory);
 }
@@ -98,4 +114,5 @@ export {
   watchCustomerSignup,
   watchFetchOrderHistory,
   watchfetchOrderStatus,
+  watchLogout
 };

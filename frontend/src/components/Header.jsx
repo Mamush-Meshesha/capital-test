@@ -8,13 +8,23 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import Pizza from "./Piza";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { logoutRequest } from "../store/slice/userSlice";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+
+  const user = useSelector((state) => state.customer.user) || null;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -22,6 +32,22 @@ const Header = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    // For example:
+    dispatch(logoutRequest());
+    handleUserMenuClose();
+    navigate("/login");
   };
 
   return (
@@ -75,17 +101,44 @@ const Header = () => {
               </Typography>
             </Grid>
 
-            {/* Register Button */}
+            {/* User Menu or Login Button */}
             <Grid item>
-              <Button
-                variant="contained"
-                sx={{ height: "40px", background: "#ff9921" }}
-              >
-                Register
-              </Button>
+              {user && user.email ? (
+                <>
+                  <IconButton onClick={handleUserMenuOpen} color="inherit">
+                    <Avatar sx={{ bgcolor: "#ff9921" }}>
+                      <AccountCircleIcon />
+                    </Avatar>
+                  </IconButton>
+                  <Menu
+                    anchorEl={userMenuAnchorEl}
+                    open={Boolean(userMenuAnchorEl)}
+                    onClose={handleUserMenuClose}
+                  >
+                    <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <Button
+                  variant="contained"
+                  sx={{ height: "40px", background: "#ff9921" }}
+                >
+                  <Link
+                    style={{
+                      outline: "none",
+                      textDecoration: "none",
+                      color: "white",
+                    }}
+                    to="/login"
+                  >
+                    Login
+                  </Link>
+                </Button>
+              )}
             </Grid>
 
-            {/* Hamburger Menu for Small Screens */}
+            {/* Mobile Menu Button */}
             <Grid item sx={{ display: { xs: "block", md: "none" } }}>
               <IconButton
                 edge="start"
@@ -98,7 +151,7 @@ const Header = () => {
             </Grid>
           </Grid>
 
-          {/* Dropdown Menu for Small Screens */}
+          {/* Mobile Menu */}
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}

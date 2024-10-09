@@ -6,11 +6,30 @@ import BackGround from "./auth/Background";
 
 const RegisterForm = ({ handleSignup }) => {
   return (
-    <Grid2 container direction="row" spacing={6}>
-      <Grid2 size={6}>
+    <Grid2 container direction="row">
+      <Grid2
+        size={6}
+        sx={{
+          display: {
+            xs: "none",
+            sm: "none",
+            md: "block",
+          },
+        }}
+      >
         <BackGround />
       </Grid2>
-      <Grid2 size={6} sx={{ background: "#fff" }}>
+      <Grid2
+        size={6}
+        sx={{
+          background: "#fff",
+          width: {
+            xs: "100%",
+            sm: "100%",
+            md: "50%",
+          },
+        }}
+      >
         <Container
           sx={{
             display: "flex",

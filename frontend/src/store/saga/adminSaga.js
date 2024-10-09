@@ -32,7 +32,7 @@ function* adminSignUp(action) {
   try {
     const res = yield call(
       axios.post,
-      "http://localhost:3000/api/admin/signup",
+      "https://capital-test.onrender.com/api/admin/signup",
       action.payload,
       {
         headers: {
@@ -51,7 +51,7 @@ function* adminLogin(action) {
   try {
     const res = yield call(
       axios.post,
-      "http://localhost:3000/api/admin/login",
+      "https://capital-test.onrender.com/api/admin/login",
       action.payload,
       {
         headers: {
@@ -71,7 +71,7 @@ function* adminLogout(action) {
   try {
     const res = yield call(
       axios.post,
-      "http://localhost:3000/api/admin/logout",
+      "https://capital-test.onrender.com/api/admin/logout",
       action.payload,
       {
         headers: {
@@ -88,7 +88,7 @@ function* adminLogout(action) {
 
 function* fetchRoles() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/roles", {
+    const res = yield call(axios.get, "https://capital-test.onrender.com/api/roles", {
       withCredentials: true,
     });
     yield put(fetchRoleSuccess(res.data));
@@ -99,7 +99,7 @@ function* fetchRoles() {
 
 function* fetchCustomers() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/customers");
+    const res = yield call(axios.get, "https://capital-test.onrender.com/api/customers");
     yield put(fetchCustomersSuccess(res.data));
   } catch (error) {
     yield put(fetchCustomersFailure(error.message));
@@ -108,7 +108,7 @@ function* fetchCustomers() {
 
 function* fetchManager() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/managers", {
+    const res = yield call(axios.get, "https://capital-test.onrender.com/api/managers", {
       withCredentials: true,
     });
     yield put(fetchManagerSuccess(res.data));
@@ -119,7 +119,7 @@ function* fetchManager() {
 
 function* getRestaurants() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/restaurants", {
+    const res = yield call(axios.get, "https://capital-test.onrender.com/api/restaurants", {
       withCredentials: true,
     });
     yield put(fetchRestaurantSuccess(res.data));
@@ -130,7 +130,7 @@ function* getRestaurants() {
 
 function* createRole(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/rolepermission", action.payload, {
+    const res = yield call(axios.post, "https://capital-test.onrender.com/api/rolepermission", action.payload, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -145,7 +145,7 @@ function* createRole(action) {
 
 function* createRestaurant(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/restaurants", action.payload, {
+    const res = yield call(axios.post, "https://capital-test.onrender.com/api/restaurants", action.payload, {
       headers: {
           "Content-Type": "application/json"
       },
