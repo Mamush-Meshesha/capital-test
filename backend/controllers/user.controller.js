@@ -43,6 +43,8 @@ const customerLogin = async (req, res) => {
     res.status(200).json({
       message: "login successfull",
       customerId: customer.id,
+      name: customer.name,
+      email: customer.email,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -193,10 +195,22 @@ const updateOrderStatus = async (req, res) => {
   }
 }
 
+const Logout = async (req, res) => {
+ try {
+   jwtUtil.clearToken(res);
+   logger.info({ userId: req.token_data?.id }, "User logged out successfully");
+   res.status(200).json({ message: "Logged out successfully" });
+ } catch (error) {
+   logger.error({ error }, "Error during logout");
+   res.status(500).json({ message: "Error logging out" });
+ }
+};
+
 module.exports = {
     customerSignup,
     customerLogin,
   customerOrder,
   fetchOrderEnum,
-    updateOrderStatus
+  updateOrderStatus,
+    Logout
 }
