@@ -4,7 +4,7 @@ import { orderFail, orderRequest, orderSuccess } from "../slice/orderSlice";
 
 function* orderPizza(action) {
     try {
-        const res = yield call(axios.post, "https://capital-test.onrender.com/api/customer/order", action.payload, {
+        const res = yield call(axios.post, "http://localhost:3000/api/customer/order", action.payload, {
             headers: {
                 "Content-Type": "application/json"
             },

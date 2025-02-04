@@ -28,7 +28,7 @@ function* managerSignup(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/manager/signup",
+      "http://localhost:3000/api/manager/signup",
       action.payload,
       {
         headers: {
@@ -47,7 +47,7 @@ function* managerLogin(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/manager/login",
+      "http://localhost:3000/api/manager/login",
       action.payload,
       {
         headers: {
@@ -67,7 +67,7 @@ function* fetchManagerOrders() {
   try {
     const res = yield call(
       axios.get,
-      "https://capital-test.onrender.com/api/customers/orders",
+      "http://localhost:3000/api/customers/orders",
       {
         withCredentials: true,
       }
@@ -81,7 +81,7 @@ function* fetchManagerOrders() {
 
 function* fetchPermission() {
   try {
-    const res = yield call(axios.get, "https://capital-test.onrender.com/api/permission", {
+    const res = yield call(axios.get, "http://localhost:3000/api/permission", {
       withCredentials: true,
     });
     yield put(fetchPermissionSuccess(res.data));
@@ -94,7 +94,7 @@ function* createMenuTopping(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/restaurant/menu",
+      "http://localhost:3000/api/restaurant/menu",
       action.payload,
       {
         headers: {
@@ -113,7 +113,7 @@ function* uploadImage(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/upload",
+      "http://localhost:3000/api/upload",
       action.payload,
       {
         headers: {
@@ -133,7 +133,7 @@ function* upadateOrderStatus(action) {
   try {
     const res = yield call(
       axios.put,
-      `https://capital-test.onrender.com/api/order/${orderId}/status`,
+      `http://localhost:3000/api/order/${orderId}/status`,
       { status },
       {
         headers: {

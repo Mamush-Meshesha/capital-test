@@ -5,7 +5,7 @@ import { getPizzas, getPizzasFailure, getPizzasSuccess, getTopRestaurant, getTop
 
 function* fetchPizza() {
     try {
-        const res = yield call(axios.get, "https://capital-test.onrender.com/api/piza")
+        const res = yield call(axios.get, "http://localhost:3000/api/piza")
         yield put(getPizzasSuccess(res.data))
     } catch (error) {
         yield put(getPizzasFailure(error.message))
@@ -15,7 +15,7 @@ function* fetchPizza() {
 
 function* fetchTopRestaurant() {
   try {
-    const res = yield call(axios.get, "https://capital-test.onrender.com/api/topres");
+    const res = yield call(axios.get, "http://localhost:3000/api/topres");
     yield put(getTopRestaurantSuccess(res.data));
   } catch (error) {
     yield put(getTopRestaurantFailure(error.message));

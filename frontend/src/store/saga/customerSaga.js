@@ -22,7 +22,7 @@ function* loginCustomer(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/customer/login",
+      "http://localhost:3000/api/customer/login",
       action.payload,
       {
         headers: {
@@ -41,7 +41,7 @@ function* registerCustomer(action) {
   try {
     const res = yield call(
       axios.post,
-      "https://capital-test.onrender.com/api/customers/signup",
+      "http://localhost:3000/api/customers/signup",
       action.payload,
       {
         headers: {
@@ -58,7 +58,7 @@ function* registerCustomer(action) {
 
 function* logoutUser(action) {
   try {
-    const res = yield call(axios.post, "https://capital-test.onrender.com/api/customer/logout", action.payload)
+    const res = yield call(axios.post, "http://localhost:3000/api/customer/logout", action.payload)
     yield put(logoutSuccess(res.data));
   } catch (error) {
     yield put(logoutFailure(error.message))
@@ -69,7 +69,7 @@ function* fetchOrderHistory() {
   try {
     const res = yield call(
       axios.get,
-      "https://capital-test.onrender.com/api/order-history",
+      "http://localhost:3000/api/order-history",
       {
         withCredentials: true,
       }
@@ -82,7 +82,7 @@ function* fetchOrderHistory() {
 
 function* fetchOrderStatus() {
   try {
-    const res = yield call(axios.get, "https://capital-test.onrender.com/api/order-status");
+    const res = yield call(axios.get, "http://localhost:3000/api/order-status");
     yield put(orderStatusSuccess(res.data));
   } catch (error) {
     yield put(orderStatusFailure(error.message));
