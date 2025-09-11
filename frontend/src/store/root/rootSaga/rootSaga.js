@@ -16,6 +16,7 @@ import {
   watchFetchManager,
   watchFetchRestaurant,
   watchFetchRole,
+  watchFetchOrders,
 } from "../../saga/adminSaga";
 import {
   watchCreateMenuTopping,
@@ -27,7 +28,7 @@ import {
   watchUploadImage,
 } from "../../saga/managerSaga";
 import { watchFetchPizza, watchFetchTopRestaurant } from "../../saga/pizzaSaga";
-import {  watchOrderPizza } from "../../saga/orderSaga";
+import { watchOrderPizza } from "../../saga/orderSaga";
 
 function* rootSaga() {
   yield all([
@@ -54,7 +55,8 @@ function* rootSaga() {
     watchfetchOrderStatus(),
     watchUpdateOrderStatus(),
     watchCreateRestaurant(),
-    watchLogout()
+    watchFetchOrders(),
+    watchLogout(),
   ]);
 }
 

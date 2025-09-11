@@ -1,17 +1,10 @@
-const { Role, Manager, Menu, Topping, Restaurant, Order, Customer, OrderItem } = require("../models");
+const prisma = require("../lib/prisma");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt-uitls");
 const { default: axios } = require("axios");
 const { defineAbilitiesFor } = require("../utils/permissions");
 const managerSignup = async (req, res) => {
-  const {
-    name,
-    email,
-    location,
-    password,
-    phone_number,
-    roleName,
-  } = req.body;
+  const { name, email, location, password, phone_number, roleName } = req.body;
 
   const ability = defineAbilitiesFor(req.user);
 
@@ -22,7 +15,7 @@ const managerSignup = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const role = await Role.findOne({
+  const role = await prisma.role.findFirst({
     where: { name: roleName },
   });
 
@@ -30,17 +23,18 @@ const managerSignup = async (req, res) => {
     return res.status(404).json({ message: "Role not found." });
   }
 
-  const manager = {
-    name,
-    email,
-    location,
-    password: hashedPassword,
-    phone_number,
-    role_id: role.id,
-    admin_id: req.user.id,
-  };
   try {
-    const response = await Manager.create(manager);
+    const response = await prisma.manager.create({
+      data: {
+        name,
+        email,
+        location,
+        password: hashedPassword,
+        phone_number,
+        role_id: role.id,
+        admin_id: req.user.id,
+      },
+    });
     res.status(201).json(response);
   } catch (error) {
     console.log(error);
@@ -50,14 +44,15 @@ const managerSignup = async (req, res) => {
 const managerLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const manager = await Manager.findOne({
+    const manager = await prisma.manager.findUnique({
       where: { email },
-      include: [
-        {
-          model: Role,
-          attributes: ["name"],
+      include: {
+        role: {
+          select: {
+            name: true,
+          },
         },
-      ],
+      },
     });
     if (!manager) {
       return res.status(404).json({ message: "invalid credentials" });
@@ -66,12 +61,12 @@ const managerLogin = async (req, res) => {
     if (!isValidPassword) {
       return res.status(404).json({ message: "invalid credentials" });
     }
-    if (manager.Role.name !== "manager") {
+    if (manager.role.name !== "manager") {
       return res
         .status(404)
         .json({ message: "Unauthorized, your not an manager" });
     }
-    generateToken(res, manager.id);
+    generateToken(res, manager.id, "manager");
     res.status(200).json({
       message: "login successfull",
       adminId: manager.id,
@@ -89,8 +84,10 @@ const addTopping = async (req, res) => {
     const { menuId } = req.params;
     const { name } = req.body;
 
-    const user = req.user; 
-    const menu = await Menu.findByPk(menuId);
+    const user = req.user;
+    const menu = await prisma.menu.findUnique({
+      where: { id: parseInt(menuId) },
+    });
     if (!menu) {
       return res.status(404).json({ message: "Menu item not found" });
     }
@@ -100,9 +97,11 @@ const addTopping = async (req, res) => {
         message: "You are not authorized to add toppings for this menu.",
       });
     }
-    const topping = await Topping.create({
-      menu_id: menuId,
-      name: name,
+    const topping = await prisma.topping.create({
+      data: {
+        menu_id: parseInt(menuId),
+        name: name,
+      },
     });
 
     res.status(201).json({
@@ -118,11 +117,11 @@ const addTopping = async (req, res) => {
 };
 
 const addMenu = async (req, res) => {
-  const { name, price, image_url, toppings } = req.body; 
+  const { name, price, image_url, toppings } = req.body;
   console.log("User in middleware:", req.user);
 
   try {
-    const restaurant = await Restaurant.findOne({
+    const restaurant = await prisma.restaurant.findFirst({
       where: {
         managerId: req.user.id,
       },
@@ -134,19 +133,23 @@ const addMenu = async (req, res) => {
         .json({ message: "Restaurant not found for this manager" });
     }
 
-    const newMenu = await Menu.create({
-      name,
-      price,
-      image_url,
-      restaurants_id: restaurant.id,
-      manager_id: req.user.id,
+    const newMenu = await prisma.menu.create({
+      data: {
+        name,
+        price,
+        image_url,
+        restaurants_id: restaurant.id,
+        manager_id: req.user.id,
+      },
     });
 
     if (toppings && Array.isArray(toppings)) {
       const toppingsPromises = toppings.map((topping) =>
-        Topping.create({
-          menu_id: newMenu.id,
-          name: topping,
+        prisma.topping.create({
+          data: {
+            menu_id: newMenu.id,
+            name: topping,
+          },
         })
       );
 
@@ -156,7 +159,7 @@ const addMenu = async (req, res) => {
     res.status(201).json({
       message: "Menu and toppings created successfully",
       menu: newMenu,
-      toppings: toppings || [], 
+      toppings: toppings || [],
     });
   } catch (error) {
     console.error("Error creating menu and toppings:", error);
@@ -164,35 +167,51 @@ const addMenu = async (req, res) => {
   }
 };
 
-
 // get users order
 const getCustomerOrder = async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      include: [
-        {
-          model: Customer, 
-          attributes: ["id", "name", "email", "phone_number"], 
+    const orders = await prisma.order.findMany({
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone_number: true,
+          },
         },
-        {
-          model: Restaurant, 
-          attributes: ["id", "name", "location"],
+        restaurant: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+          },
         },
-        {
-          model: OrderItem, 
-          attributes: ["id", "quantity"],
-          include: [
-            {
-              model: Menu,
-              attributes: ["id", "name", "price", "image_url"],
+        orderItems: {
+          select: {
+            id: true,
+            quantity: true,
+            menu: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                image_url: true,
+              },
             },
-            {
-              model: Topping, 
-              attributes: ["id", "name"],
+            orderItemToppings: {
+              select: {
+                topping: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
             },
-          ],
+          },
         },
-      ],
+      },
     });
 
     res.status(200).json(orders);
@@ -216,13 +235,13 @@ const uploadToImgur = async (imageBuffer) => {
     }
   );
 
-  return response.data.data.link; 
+  return response.data.data.link;
 };
 
 const uploadImage = async (req, res) => {
   try {
     const imageBuffer = {
-      image: req.file.buffer.toString("base64"), 
+      image: req.file.buffer.toString("base64"),
     };
 
     const imgurUrl = await uploadToImgur(imageBuffer);

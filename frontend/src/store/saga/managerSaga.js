@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../utils/api";
 import { put, call, takeLatest } from "redux-saga/effects";
 import {
   createMenuToppingFailure,
@@ -26,17 +26,11 @@ import {
 
 function* managerSignup(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/manager/signup",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.post, "/api/manager/signup", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put(managerRegisterSuccess(res.data));
   } catch (error) {
     yield put(managerRegisterFail(error.message));
@@ -45,17 +39,11 @@ function* managerSignup(action) {
 
 function* managerLogin(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/manager/login",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.post, "/api/manager/login", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     yield put(managerLoginSuccess(res.data));
   } catch (error) {
@@ -65,13 +53,7 @@ function* managerLogin(action) {
 
 function* fetchManagerOrders() {
   try {
-    const res = yield call(
-      axios.get,
-      "http://localhost:3000/api/customers/orders",
-      {
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.get, "/api/customers/orders");
     yield put(managerFetchOrdersSuccess(res.data));
     console.log(res.data);
   } catch (error) {
@@ -81,9 +63,7 @@ function* fetchManagerOrders() {
 
 function* fetchPermission() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/permission", {
-      withCredentials: true,
-    });
+    const res = yield call(api.get, "/api/permission");
     yield put(fetchPermissionSuccess(res.data));
   } catch (error) {
     yield put(fetchPermissionFailure(error.message));
@@ -92,17 +72,11 @@ function* fetchPermission() {
 
 function* createMenuTopping(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/restaurant/menu",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.post, "/api/restaurant/menu", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put(createMenuToppingSuccess(res.data));
   } catch (error) {
     yield put(createMenuToppingFailure(error.message));
@@ -111,16 +85,11 @@ function* createMenuTopping(action) {
 
 function* uploadImage(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/upload",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const res = yield call(api.post, "/api/upload", action.payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     yield put(uploadImageImgurSuccess(res.data));
   } catch (error) {
@@ -129,21 +98,22 @@ function* uploadImage(action) {
 }
 
 function* upadateOrderStatus(action) {
-  const { orderId,status , } = action.payload;
+  const { orderId, status } = action.payload;
   try {
     const res = yield call(
-      axios.put,
-      `http://localhost:3000/api/order/${orderId}/status`,
+      api.put,
+      `/api/order/${orderId}/status`,
       { status },
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
       }
     );
 
-    yield put(updateOrderStatusSuccess({orderId,newStatus: res.data.status }));
+    yield put(
+      updateOrderStatusSuccess({ orderId, newStatus: res.data.status })
+    );
   } catch (error) {
     yield put(updateOrderStatusFailure(error.message));
   }
@@ -184,5 +154,5 @@ export {
   watchFetchPermission,
   watchCreateMenuTopping,
   watchUploadImage,
-  watchUpdateOrderStatus
+  watchUpdateOrderStatus,
 };

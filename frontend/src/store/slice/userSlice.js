@@ -7,7 +7,7 @@ const initialState = {
   loading: false,
   error: null,
   orderHistory: [],
-  orderStatus: []
+  orderStatus: [],
 };
 
 export const userSlice = createSlice({
@@ -21,6 +21,12 @@ export const userSlice = createSlice({
       state.loading = false;
       state.user = action.payload;
       state.isUserLogin = true;
+      try {
+        localStorage.setItem(
+          "userRole",
+          JSON.stringify(action.payload?.role || null)
+        );
+      } catch {}
     },
     loginFailure: (state, action) => {
       state.loading = false;
@@ -40,37 +46,33 @@ export const userSlice = createSlice({
     },
 
     logoutRequest: (state) => {
-      state.loading = true
+      state.loading = true;
     },
     logoutSuccess: (state, action) => {
-      state.user = action.payload
+      state.user = action.payload;
     },
-    logoutFailure: (state, action) => { 
-      state.loading = false,
-        state.error = action.payload
+    logoutFailure: (state, action) => {
+      (state.loading = false), (state.error = action.payload);
     },
     orderHistoryRequest: (state) => {
-      state.loading = true
+      state.loading = true;
     },
     orderHistorySuccess: (state, action) => {
-      state.loading = false
-      state.orderHistory = action.payload
+      state.loading = false;
+      state.orderHistory = action.payload;
     },
     orderHistoryFailure: (state, action) => {
-      state.loading = false,
-      state.error = action.payload
+      (state.loading = false), (state.error = action.payload);
     },
     orderStatusRequest: (state) => {
-      state.loading = false
+      state.loading = false;
     },
     orderStatusSuccess: (state, action) => {
-      state.loading = false,
-        state.orderStatus = action.payload
+      (state.loading = false), (state.orderStatus = action.payload);
     },
     orderStatusFailure: (state, action) => {
-      state.loading = false,
-        state.error = action.payload
-    }
+      (state.loading = false), (state.error = action.payload);
+    },
   },
 });
 
@@ -89,7 +91,7 @@ export const {
   orderStatusRequest,
   orderStatusSuccess,
   logoutFailure,
-  logoutRequest
+  logoutRequest,
 } = userSlice.actions;
 
-export default userSlice.reducer
+export default userSlice.reducer;

@@ -1,7 +1,6 @@
-const bcrypt = require("bcrypt")
-const { Admin, Manager, Restaurant, Role, Customer, RolePermission } = require("../models");
+const bcrypt = require("bcrypt");
+const prisma = require("../lib/prisma");
 const { generateToken } = require("../utils/jwt-uitls");
-
 
 const adminSignUp = async (req, res) => {
   const { name, email, password, phone_number } = req.body;
@@ -9,11 +8,13 @@ const adminSignUp = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const admin = await Admin.create({
-      name,
-      email,
-      password: hashedPassword,
-      phone_number,
+    const admin = await prisma.admin.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone_number,
+      },
     });
     res.status(201).json(admin);
   } catch (error) {
@@ -24,7 +25,7 @@ const adminSignUp = async (req, res) => {
 const adminLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const admin = await Admin.findOne({ where: { email } });
+    const admin = await prisma.admin.findUnique({ where: { email } });
     if (!admin) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -38,7 +39,7 @@ const adminLogin = async (req, res) => {
         .json({ message: "You are not an admin , back-off" });
     }
 
-    generateToken(res, admin.id);
+    generateToken(res, admin.id, "admin");
     res.status(200).json({
       message: "Login successful",
       adminId: admin.id,
@@ -46,23 +47,22 @@ const adminLogin = async (req, res) => {
       email: admin.email,
       role: admin.role,
     });
-    console.log(token);
   } catch (error) {
     console.log(`error occure during login ${error}`);
   }
 };
 
 const adminLogout = async (req, res) => {
-  res.cookie('jwt', "", {
+  res.cookie("jwt", "", {
     httpOnly: true,
-    expires: new Date(0)
-  })
-  res.status(200).json({message: "Seccessfully logged out"})
-}
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Seccessfully logged out" });
+};
 
 // roles
 
-const Roles =   async (req, res) => {
+const Roles = async (req, res) => {
   console.log("Request Body:", req.body);
 
   const { name } = req.body;
@@ -72,27 +72,31 @@ const Roles =   async (req, res) => {
   }
 
   try {
-    const role = await Role.create({ name });
+    const role = await prisma.role.create({ data: { name } });
     res.status(201).json(role);
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.log(error);
   }
-}
+};
 
 const Restaurants = async (req, res) => {
   try {
     const { name, location, managerName } = req.body;
-    const manager = await Manager.findOne({ where: { name: managerName } });
+    const manager = await prisma.manager.findFirst({
+      where: { name: managerName },
+    });
 
     if (!manager) {
       return res.status(404).json({ message: "Manager not found" });
     }
-    const restaurant = await Restaurant.create({
-      name,
-      location,
-      admin_id: req.user.id,
-      managerId: manager.id,
+    const restaurant = await prisma.restaurant.create({
+      data: {
+        name,
+        location,
+        admin_id: req.user.id,
+        managerId: manager.id,
+      },
     });
     res.status(201).json(restaurant);
   } catch (error) {
@@ -102,13 +106,14 @@ const Restaurants = async (req, res) => {
 
 const getRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.findAll({
-      include: [
-        {
-          model: Manager,
-          attributes: ["name"],
+    const restaurants = await prisma.restaurant.findMany({
+      include: {
+        manager: {
+          select: {
+            name: true,
+          },
         },
-      ],
+      },
     });
     res.status(200).json(restaurants);
   } catch (error) {
@@ -117,7 +122,7 @@ const getRestaurants = async (req, res) => {
 };
 
 const createRoleWithPermissions = async (req, res) => {
-  const { roleName, permissions } = req.body; 
+  const { roleName, permissions } = req.body;
 
   if (!roleName || !permissions || !Array.isArray(permissions)) {
     return res.status(400).json({
@@ -126,13 +131,17 @@ const createRoleWithPermissions = async (req, res) => {
   }
 
   try {
-    const newRole = await Role.create({
-      name: roleName,
+    const newRole = await prisma.role.create({
+      data: {
+        name: roleName,
+      },
     });
 
-    const rolePermissions = await RolePermission.create({
-      role_id: newRole.id,
-      permissions: permissions, 
+    const rolePermissions = await prisma.rolePermission.create({
+      data: {
+        role_id: newRole.id,
+        permissions: permissions,
+      },
     });
 
     return res.status(201).json({
@@ -152,27 +161,31 @@ const createRoleWithPermissions = async (req, res) => {
 //get roles
 
 const getRoles = async (req, res) => {
-  
   try {
-    const roles = await Role.findAll({
-      include: [
-        {
-           model: RolePermission,
-          attributes: ["permissions"],
+    const roles = await prisma.role.findMany({
+      include: {
+        role_permissions: {
+          select: {
+            permissions: true,
+          },
         },
-      ],
+      },
     });
     res.status(200).json(roles);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 const getPermission = async (req, res) => {
   try {
-    const defaultPermissions =
-      RolePermission.getAttributes().permissions.defaultValue;
+    const defaultPermissions = [
+      "update order status",
+      "see customers",
+      "see orders",
+      "add user",
+      "create role",
+    ];
     res.status(200).json(defaultPermissions);
   } catch (error) {
     console.log(error);
@@ -184,32 +197,62 @@ const getPermission = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const customers = await Customer.findAll({})
-    res.status(200).json(customers)
+    const customers = await prisma.customer.findMany({});
+    res.status(200).json(customers);
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 const getManager = async (req, res) => {
   try {
-    const managers = await Manager.findAll({
-      include: [
-        {
-          model: Restaurant,
-          attributes: ["name", "location"],
+    const managers = await prisma.user.findMany({
+      where: { role: "MANAGER" },
+      include: {
+        managedRestaurants: {
+          select: {
+            name: true,
+            location: true,
+          },
         },
-        {
-          model: Role,
-          attributes: ["name"],
-      }
-      ]
-    })
-    res.status(200).json(managers)
+      },
+    });
+    res.status(200).json(managers);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
+const getOrders = async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        customer: {
+          select: {
+            name: true,
+            phone_number: true,
+          },
+        },
+        orderItems: {
+          include: {
+            orderItemToppings: {
+              include: {
+                topping: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   adminSignUp,
@@ -224,4 +267,5 @@ module.exports = {
   getRestaurants,
   getPermission,
   createRoleWithPermissions,
+  getOrders,
 };

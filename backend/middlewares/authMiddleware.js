@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Admin, Manager,Customer } = require("../models");
+const prisma = require("../lib/prisma");
 
 const protect = async (req, res, next) => {
   let token = req.cookies.jwt;
@@ -7,9 +7,15 @@ const protect = async (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-      req.user = await Admin.findByPk(decoded.id); 
+      req.user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
-      next(); 
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ message: "Not authorized, user not found" });
+      }
+
+      next();
     } catch (error) {
       console.log(error);
       res.status(401).json({ message: "Not authorized, token failed" });
@@ -21,20 +27,26 @@ const protect = async (req, res, next) => {
 const protectManager = async (req, res, next) => {
   let token = req.cookies.jwt;
 
-  console.log("Token from cookie:", token); 
+  console.log("Token from cookie:", token);
 
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-      console.log("Decoded JWT:", decoded); 
+      console.log("Decoded JWT:", decoded);
 
-      req.user = await Manager.findByPk(decoded.id); 
+      req.user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
       if (!req.user) {
-        console.log("Manager not found for id:", decoded.id);
+        console.log("User not found for id:", decoded.id);
         return res
           .status(401)
-          .json({ message: "Not authorized, manager not found" });
+          .json({ message: "Not authorized, user not found" });
+      }
+
+      if (req.user.role !== "MANAGER") {
+        return res
+          .status(401)
+          .json({ message: "Not authorized, manager access required" });
       }
 
       next();
@@ -52,8 +64,7 @@ const protectCustomer = async (req, res, next) => {
 
   if (req.cookies.jwt) {
     token = req.cookies.jwt;
-  }
-  else if (
+  } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
@@ -67,13 +78,21 @@ const protectCustomer = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
       console.log("Decoded token:", decoded);
 
-      req.user = await Customer.findByPk(decoded.id);
+      req.user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+      });
 
       if (!req.user) {
-        console.log("Customer not found for id:", decoded.id);
+        console.log("User not found for id:", decoded.id);
         return res
           .status(401)
-          .json({ message: "Not authorized, customer not found" });
+          .json({ message: "Not authorized, user not found" });
+      }
+
+      if (req.user.role !== "CUSTOMER") {
+        return res
+          .status(401)
+          .json({ message: "Not authorized, customer access required" });
       }
 
       console.log("User found:", req.user.id);
@@ -89,27 +108,25 @@ const protectCustomer = async (req, res, next) => {
 };
 
 const superAdmin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.user && req.user.role === "ADMIN") {
     next();
   } else {
     res.status(401).json({ message: "Not authorized, admin access only" });
   }
 };
 
-
-
 const manager = (req, res, next) => {
-    if (req.user && req.user.role === "manager") {
-        next()
-    } else {
-        res.status(401).json({message: "Not authorized, Manager only"})
-    }
-}
+  if (req.user && req.user.role === "MANAGER") {
+    next();
+  } else {
+    res.status(401).json({ message: "Not authorized, Manager only" });
+  }
+};
 
 module.exports = {
   protect,
-    superAdmin,
-    manager,
+  superAdmin,
+  manager,
   protectManager,
-  protectCustomer
+  protectCustomer,
 };

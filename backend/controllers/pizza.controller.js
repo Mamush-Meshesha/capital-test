@@ -1,66 +1,86 @@
-const { Manager, Menu, Restaurant, Topping, Order, Customer, OrderItem } =require("../models")
+const prisma = require("../lib/prisma");
 
 const getPizza = async (req, res) => {
-    try {
-        const pizza = await Menu.findAll({
-            include: [
-                {
-                    model: Manager,
-                    attributes: ["id","name"],
-                },
-                {
-                    model: Restaurant,
-                    attributes: ["name"]
-                },
-                {
-                    model: Topping,
-                    attributes: ["name"]
-                }
-            ]
-        })
-        res.status(200).json(pizza)
-    } catch (error) {
-        console.log(error)
-    }
-}
+  try {
+    const pizza = await prisma.menu.findMany({
+      include: {
+        manager: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        restaurant: {
+          select: {
+            name: true,
+          },
+        },
+        toppings: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(pizza);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const getRestaurants = async (req, res) => {
-    
-    try {
-        const restaurants = await Restaurant.findAll({})
-        res.status(200).json(restaurants)
-    } catch (error) {
-        console.log(error.message)
-    }
-} 
+  try {
+    const restaurants = await prisma.restaurant.findMany({});
+    res.status(200).json(restaurants);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 const getCustomerOrder = async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      include: [
-        {
-          model: Customer,
-          attributes: ["id", "name", "email", "phone_number"],
+    const orders = await prisma.order.findMany({
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone_number: true,
+          },
         },
-        {
-          model: Restaurant,
-          attributes: ["id", "name", "location"],
+        restaurant: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+          },
         },
-        {
-          model: OrderItem,
-          attributes: ["id", "quantity"],
-          include: [
-            {
-              model: Menu,
-              attributes: ["id", "name", "price", "image_url"],
+        orderItems: {
+          select: {
+            id: true,
+            quantity: true,
+            menu: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                image_url: true,
+              },
             },
-            {
-              model: Topping,
-              attributes: ["id", "name"],
+            orderItemToppings: {
+              select: {
+                topping: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
             },
-          ],
+          },
         },
-      ],
+      },
     });
 
     res.status(200).json(orders);
@@ -72,4 +92,4 @@ const getCustomerOrder = async (req, res) => {
   }
 };
 
-module.exports ={getPizza, getRestaurants, getCustomerOrder}
+module.exports = { getPizza, getRestaurants, getCustomerOrder };

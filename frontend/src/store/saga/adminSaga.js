@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../utils/api";
 import { call, put, takeLatest } from "redux-saga/effects";
 import {
   adminLoginFail,
@@ -26,20 +26,18 @@ import {
   createRestaurantRequest,
   createRestaurantSuccess,
   createRestaurantFailure,
+  fetchOrdersRequest,
+  fetchOrdersSuccess,
+  fetchOrdersFailure,
 } from "../slice/adminSlice";
 
 function* adminSignUp(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/admin/signup",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = yield call(api.post, "/api/admin/signup", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     yield put(res.data);
   } catch (error) {
@@ -49,19 +47,17 @@ function* adminSignUp(action) {
 
 function* adminLogin(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/admin/login",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-
-    yield put(adminLoginSuccess(res.data));
+    const res = yield call(api.post, "/api/auth/login", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const role = (res?.data?.role || "").toString().toLowerCase();
+    if (role === "admin") {
+      yield put(adminLoginSuccess(res.data));
+    } else {
+      yield put(adminLoginFail("Not an admin account"));
+    }
   } catch (error) {
     yield put(adminLoginFail(error.message));
   }
@@ -69,17 +65,11 @@ function* adminLogin(action) {
 
 function* adminLogout(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/admin/logout",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.post, "/api/admin/logout", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put(adminLogoutSuccess(res.data));
   } catch (error) {
     yield put(adminLogoutFail(error.message));
@@ -88,9 +78,7 @@ function* adminLogout(action) {
 
 function* fetchRoles() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/roles", {
-      withCredentials: true,
-    });
+    const res = yield call(api.get, "/api/roles");
     yield put(fetchRoleSuccess(res.data));
   } catch (error) {
     yield put(fetchRoleFailure(error.message));
@@ -99,7 +87,7 @@ function* fetchRoles() {
 
 function* fetchCustomers() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/customers");
+    const res = yield call(api.get, "/api/customers");
     yield put(fetchCustomersSuccess(res.data));
   } catch (error) {
     yield put(fetchCustomersFailure(error.message));
@@ -108,9 +96,7 @@ function* fetchCustomers() {
 
 function* fetchManager() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/managers", {
-      withCredentials: true,
-    });
+    const res = yield call(api.get, "/api/managers");
     yield put(fetchManagerSuccess(res.data));
   } catch (error) {
     yield put(fetchManagerFailure(error.message));
@@ -119,9 +105,7 @@ function* fetchManager() {
 
 function* getRestaurants() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/restaurants", {
-      withCredentials: true,
-    });
+    const res = yield call(api.get, "/api/restaurants");
     yield put(fetchRestaurantSuccess(res.data));
   } catch (error) {
     yield put(fetchRestaurantFailure(error.message));
@@ -130,11 +114,10 @@ function* getRestaurants() {
 
 function* createRole(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/rolepermission", action.payload, {
+    const res = yield call(api.post, "/api/rolepermission", action.payload, {
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true,
     });
 
     yield put(createRolePermissionSuccess(res.data));
@@ -145,15 +128,23 @@ function* createRole(action) {
 
 function* createRestaurant(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/restaurants", action.payload, {
+    const res = yield call(api.post, "/api/restaurants", action.payload, {
       headers: {
-          "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      withCredentials: true
-    })
-    yield put(createRestaurantSuccess(res.data))
+    });
+    yield put(createRestaurantSuccess(res.data));
   } catch (error) {
-    yield put(createRestaurantFailure(error.message))
+    yield put(createRestaurantFailure(error.message));
+  }
+}
+
+function* fetchOrders() {
+  try {
+    const res = yield call(api.get, "/api/orders");
+    yield put(fetchOrdersSuccess(res.data));
+  } catch (error) {
+    yield put(fetchOrdersFailure(error.message));
   }
 }
 
@@ -187,7 +178,11 @@ function* watchCreateRoleWithPermision() {
   yield takeLatest(createRolePermissionRequest, createRole);
 }
 function* watchCreateRestaurant() {
-  yield takeLatest(createRestaurantRequest, createRestaurant)
+  yield takeLatest(createRestaurantRequest, createRestaurant);
+}
+
+function* watchFetchOrders() {
+  yield takeLatest(fetchOrdersRequest, fetchOrders);
 }
 export {
   watchAdminLogin,
@@ -196,7 +191,8 @@ export {
   watchFetchRole,
   watchFetchCustomer,
   watchFetchManager,
-    watchFetchRestaurant,
+  watchFetchRestaurant,
   watchCreateRoleWithPermision,
-  watchCreateRestaurant
+  watchCreateRestaurant,
+  watchFetchOrders,
 };

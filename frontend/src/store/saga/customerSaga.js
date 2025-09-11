@@ -2,6 +2,11 @@ import {
   loginFailure,
   loginStart,
   loginSuccess,
+  registerFailure,
+  registerStart,
+  registerSuccess,
+} from "../slice/authSlice";
+import {
   logoutFailure,
   logoutRequest,
   logoutSuccess,
@@ -11,69 +16,51 @@ import {
   orderStatusFailure,
   orderStatusRequest,
   orderStatusSuccess,
-  registerFailure,
-  registerStart,
-  registerSuccess,
 } from "../slice/userSlice";
 import { put, call, takeLatest } from "redux-saga/effects";
-import axios from "axios";
+import api from "../../utils/api";
 
 function* loginCustomer(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/customer/login",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const { role, ...creds } = action.payload || {};
+    const endpoint = "/api/auth/login";
+
+    const res = yield call(api.post, endpoint, creds, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put(loginSuccess(res.data));
   } catch (error) {
-    yield put(loginFailure(error.data));
+    yield put(loginFailure(error?.response?.data || error.message));
   }
 }
 
 function* registerCustomer(action) {
   try {
-    const res = yield call(
-      axios.post,
-      "http://localhost:3000/api/customers/signup",
-      action.payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.post, "/api/auth/register", action.payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     yield put(registerSuccess(res.data));
   } catch (error) {
-    yield put(registerFailure(error.message));
+    yield put(registerFailure(error?.response?.data || error.message));
   }
 }
 
 function* logoutUser(action) {
   try {
-    const res = yield call(axios.post, "http://localhost:3000/api/customer/logout", action.payload)
+    const res = yield call(api.post, "/api/customer/logout", action.payload);
     yield put(logoutSuccess(res.data));
   } catch (error) {
-    yield put(logoutFailure(error.message))
+    yield put(logoutFailure(error.message));
   }
 }
 
 function* fetchOrderHistory() {
   try {
-    const res = yield call(
-      axios.get,
-      "http://localhost:3000/api/order-history",
-      {
-        withCredentials: true,
-      }
-    );
+    const res = yield call(api.get, "/api/order-history");
     yield put(orderHistorySuccess(res.data));
   } catch (error) {
     yield put(orderHistoryFailure(error.message));
@@ -82,7 +69,7 @@ function* fetchOrderHistory() {
 
 function* fetchOrderStatus() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/order-status");
+    const res = yield call(api.get, "/api/order-status");
     yield put(orderStatusSuccess(res.data));
   } catch (error) {
     yield put(orderStatusFailure(error.message));
@@ -114,5 +101,5 @@ export {
   watchCustomerSignup,
   watchFetchOrderHistory,
   watchfetchOrderStatus,
-  watchLogout
+  watchLogout,
 };

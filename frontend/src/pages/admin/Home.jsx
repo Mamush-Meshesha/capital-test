@@ -1,12 +1,13 @@
-import Sidebar from "../../components/admin/Sidebar"
+import Sidebar from "../../components/admin/Sidebar";
+import Footer from "../../components/Footer";
 
 const HomeA = () => {
+  return (
+    <>
+      <Sidebar />
+      <Footer />
+    </>
+  );
+};
 
-    return (
-        <>
-            <Sidebar />
-        </>
-    )
-}
-
-export default HomeA
+export default HomeA;

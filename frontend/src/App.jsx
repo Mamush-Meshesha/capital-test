@@ -4,7 +4,7 @@ function App() {
   return (
     <div>
       <main>
-        <Outlet /> 
+        <Outlet />
       </main>
     </div>
   );

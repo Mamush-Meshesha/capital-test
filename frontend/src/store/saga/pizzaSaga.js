@@ -1,33 +1,37 @@
-import axios from "axios"
+import api from "../../utils/api";
 import { put, call, takeLatest } from "redux-saga/effects";
-import { getPizzas, getPizzasFailure, getPizzasSuccess, getTopRestaurant, getTopRestaurantFailure, getTopRestaurantSuccess } from "../slice/pizzaSlice";
-
+import {
+  getPizzas,
+  getPizzasFailure,
+  getPizzasSuccess,
+  getTopRestaurant,
+  getTopRestaurantFailure,
+  getTopRestaurantSuccess,
+} from "../slice/pizzaSlice";
 
 function* fetchPizza() {
-    try {
-        const res = yield call(axios.get, "http://localhost:3000/api/piza")
-        yield put(getPizzasSuccess(res.data))
-    } catch (error) {
-        yield put(getPizzasFailure(error.message))
-    }
-
+  try {
+    const res = yield call(api.get, "/api/piza");
+    yield put(getPizzasSuccess(res.data));
+  } catch (error) {
+    yield put(getPizzasFailure(error.message));
+  }
 }
 
 function* fetchTopRestaurant() {
   try {
-    const res = yield call(axios.get, "http://localhost:3000/api/topres");
+    const res = yield call(api.get, "/api/topres");
     yield put(getTopRestaurantSuccess(res.data));
   } catch (error) {
     yield put(getTopRestaurantFailure(error.message));
   }
 }
 
-
 function* watchFetchPizza() {
-    yield takeLatest(getPizzas, fetchPizza)
+  yield takeLatest(getPizzas, fetchPizza);
 }
 function* watchFetchTopRestaurant() {
   yield takeLatest(getTopRestaurant, fetchTopRestaurant);
 }
 
-export {watchFetchPizza,watchFetchTopRestaurant}
+export { watchFetchPizza, watchFetchTopRestaurant };

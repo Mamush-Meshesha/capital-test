@@ -1,3 +1,26 @@
+import { AbilityBuilder, Ability } from "@casl/ability";
+
+export const defineAbilitiesFor = (role) => {
+  const { can, cannot, build } = new AbilityBuilder(Ability);
+
+  if (role === "admin") {
+    can("manage", "Admin");
+    can("read", "Home");
+  } else if (role === "manager") {
+    can("read", "Manager");
+    can("read", "Home");
+  } else if (role === "customer") {
+    can("read", "Order");
+    can("read", "Home");
+  } else {
+    can("read", "Home");
+    cannot("read", "Order");
+    cannot("manage", "Admin");
+  }
+
+  return build();
+};
+
 // // src/casl/ability.jsx
 // import {  AbilityBuilder } from "@casl/ability";
 
@@ -17,4 +40,3 @@
 
 //   return build();
 // };
-

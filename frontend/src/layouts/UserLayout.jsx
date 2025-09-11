@@ -1,29 +1,12 @@
 import { useSelector } from "react-redux";
-import {   Navigate, Outlet,  } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 const UserLayout = () => {
-   const isUserLogin = useSelector((state) => state.customer.isUserLogin);
-  //  const navigate = useNavigate();
-  //  useEffect(() => {
-  //    if (isUserLogin) {
-  //      if (location.pathname === "/login") {
-  //        navigate("/");
-  //      }
-  //        if (location.pathname === "/login") {
-  //          navigate("/order");
-  //        }
-     
-  //    }
-  //  }, [isUserLogin, navigate, ]);
+  const auth = useSelector((state) => state?.auth);
+  const role = (auth?.user?.role || "guest").toString().toLowerCase();
+  const isUserLogin = Boolean(auth?.isAuthenticated || role !== "guest");
 
-  // return  (
-  //   (
-  //       <Outlet />
-  //   )
-   // )
-   console.log(isUserLogin)
-  
-  return isUserLogin ? <Outlet /> : <Navigate to="/login" />
- };
+  return isUserLogin ? <Outlet /> : <Navigate to="/login" />;
+};
 
 export default UserLayout;

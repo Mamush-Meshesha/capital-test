@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CUSTOMER
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  phone_number String?
+  location     String?
+  role         UserRole @default(CUSTOMER)
+  created_at   DateTime @default(now())
+
+  // Relations
+  adminRestaurants   Restaurant[] @relation("AdminRestaurants")
+  managedRestaurants Restaurant[] @relation("ManagerRestaurants")
+  menus              Menu[]       @relation("MenuManager")
+  orders             Order[]      @relation("OrderCustomer")
+
+  @@map("users")
+}
+
+// Admin, Manager, Customer merged into User
+
+model Role {
+  id         Int      @id @default(autoincrement())
+  name       String
+  created_at DateTime @default(now())
+
+  // Relations
+  role_permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  id          Int      @id @default(autoincrement())
+  role_id     Int
+  permissions String[] @default(["update order status", "see customers", "see orders", "add user", "create role"])
+  created_at  DateTime @default(now())
+
+  // Relations
+  role Role @relation(fields: [role_id], references: [id])
+
+  @@map("role_permission")
+}
+
+// Manager and Customer removed; use User with role instead
+
+model Restaurant {
+  id         Int      @id @default(autoincrement())
+  name       String
+  location   String
+  admin_id   Int
+  managerId  Int
+  created_at DateTime @default(now())
+
+  // Relations
+  admin   User    @relation("AdminRestaurants", fields: [admin_id], references: [id])
+  manager User    @relation("ManagerRestaurants", fields: [managerId], references: [id])
+  menus   Menu[]
+  orders  Order[]
+
+  @@map("restaurants")
+}
+
+model Menu {
+  id             Int      @id @default(autoincrement())
+  name           String
+  price          Int
+  image_url      String?
+  restaurants_id Int
+  manager_id     Int
+  created_at     DateTime @default(now())
+
+  // Relations
+  restaurant Restaurant  @relation(fields: [restaurants_id], references: [id])
+  manager    User        @relation("MenuManager", fields: [manager_id], references: [id])
+  toppings   Topping[]
+  orderItems OrderItem[]
+
+  @@map("menus")
+}
+
+model Topping {
+  id         Int      @id @default(autoincrement())
+  menu_id    Int?
+  name       String?
+  created_at DateTime @default(now())
+
+  // Relations
+  menu              Menu?              @relation(fields: [menu_id], references: [id])
+  orderItemToppings OrderItemTopping[]
+
+  @@map("toppings")
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  customer_id   Int
+  restaurant_id Int
+  status        OrderStatus @default(PREPARING)
+  created_at    DateTime    @default(now())
+
+  // Relations
+  customer   User        @relation("OrderCustomer", fields: [customer_id], references: [id])
+  restaurant Restaurant  @relation(fields: [restaurant_id], references: [id])
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  order_id   Int
+  menu_id    Int
+  quantity   Int
+  created_at DateTime @default(now())
+
+  // Relations
+  order             Order              @relation(fields: [order_id], references: [id])
+  menu              Menu               @relation(fields: [menu_id], references: [id])
+  orderItemToppings OrderItemTopping[]
+
+  @@map("order_items")
+}
+
+model OrderItemTopping {
+  id            Int      @id @default(autoincrement())
+  order_item_id Int
+  topping_id    Int
+  created_at    DateTime @default(now())
+
+  // Relations
+  orderItem OrderItem @relation(fields: [order_item_id], references: [id])
+  topping   Topping   @relation(fields: [topping_id], references: [id])
+
+  @@map("order_item_toppings")
+}
+
+enum OrderStatus {
+  PREPARING
+  READY
+  DELIVERED
+}

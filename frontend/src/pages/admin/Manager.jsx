@@ -6,6 +6,7 @@ import {
   fetchRoleRequest,
 } from "../../store/slice/adminSlice";
 import AdminUser from "../../components/admin/User";
+import Footer from "../../components/Footer";
 import { managerRegisterRequest } from "../../store/slice/manaSlice";
 
 const Managers = () => {
@@ -54,7 +55,7 @@ const Managers = () => {
     "roleName",
   ];
   const roleOptions = roles.map((role) => ({
-    value: role.name, 
+    value: role.name,
     label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
   }));
 
@@ -73,6 +74,7 @@ const Managers = () => {
         roleOptions={roleOptions}
         onSubmit={handleSubmit}
       />
+      <Footer />
     </Box>
   );
 };

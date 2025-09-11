@@ -13,6 +13,7 @@ const initialState = {
   restaurant: [],
   rolePermission: [],
   createRestaurants: [],
+  orders: [],
 };
 
 export const adminSlice = createSlice({
@@ -26,12 +27,13 @@ export const adminSlice = createSlice({
     adminLoginSuccess: (state, action) => {
       state.loading = false;
       state.isAdminLogin = true;
-      state.isAdmin = localStorage.setItem("isAdminLogin", JSON.stringify(action.payload));
+      localStorage.setItem("isAdminLogin", JSON.stringify(true));
+      state.isAdmin = action.payload;
     },
     adminLoginFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      state.isAdminLogin = false
+      state.isAdminLogin = false;
     },
     adminlogoutRequest: (state) => {
       state.loading = true;
@@ -39,7 +41,7 @@ export const adminSlice = createSlice({
     adminLogoutSuccess: (state) => {
       state.loading = false;
       state.isAdminLogin = false;
-      state.isAdmin = localStorage.removeItem("isAdminLogin")
+      state.isAdmin = localStorage.removeItem("isAdminLogin");
     },
     adminLogoutFail: (state, action) => {
       state.loading = false;
@@ -118,10 +120,21 @@ export const adminSlice = createSlice({
       state.loading = false;
       state.createRestaurants = action.payload;
     },
-    createRestaurantFailure: (state, action) => { 
-      state.loading = false
-      state.error = action.payload
-    }
+    createRestaurantFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    fetchOrdersRequest: (state) => {
+      state.loading = true;
+    },
+    fetchOrdersSuccess: (state, action) => {
+      state.loading = false;
+      state.orders = action.payload;
+    },
+    fetchOrdersFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -152,6 +165,9 @@ export const {
   createRolePermissionSuccess,
   createRestaurantFailure,
   createRestaurantRequest,
-  createRestaurantSuccess
+  createRestaurantSuccess,
+  fetchOrdersRequest,
+  fetchOrdersSuccess,
+  fetchOrdersFailure,
 } = adminSlice.actions;
 export default adminSlice.reducer;

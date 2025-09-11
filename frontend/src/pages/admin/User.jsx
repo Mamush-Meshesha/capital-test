@@ -1,16 +1,37 @@
 import AdminUser from "../../components/admin/User";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { managerFetchOrdersRequest, updateOrderStatus } from "../../store/slice/manaSlice";
-import { MenuItem, FormControl, Select, } from "@mui/material";
-import {orderStatusRequest} from "../../store/slice/userSlice"
+import { updateOrderStatus } from "../../store/slice/manaSlice";
+import { orderRequest } from "../../store/slice/orderSlice";
+import {
+  Box,
+  Chip,
+  MenuItem,
+  FormControl,
+  Select,
+  Typography,
+} from "@mui/material";
+import { orderStatusRequest } from "../../store/slice/userSlice";
+import { fetchOrdersRequest } from "../../store/slice/adminSlice";
 
 const UserDashBoard = () => {
   const dispatch = useDispatch();
-  const statuses = useSelector((state) => state.customer.orderStatus.status) || []
-  console.log(statuses)
-  const orders = useSelector((state) => state.manager.orders) || []
-const [data,setData] = useState([])
+  const statuses =
+    useSelector((state) => state.customer.orderStatus.status) || [];
+  const orders = useSelector((state) => state.admin.orders) || [];
+  const [data, setData] = useState([]);
+
+  const statusColor = useMemo(
+    () => ({
+      PREPARING: "warning",
+      READY: "success",
+      DELIVERED: "info",
+      Preparing: "warning",
+      Ready: "success",
+      Delivered: "info",
+    }),
+    []
+  );
   const handleStatusChange = (event, orderId) => {
     const newStatus = event.target.value;
     console.log(`Change status of order ${orderId} to ${newStatus}`);
@@ -18,104 +39,111 @@ const [data,setData] = useState([])
     dispatch(updateOrderStatus({ orderId, status: newStatus }));
   };
 
-
   useEffect(() => {
     dispatch(orderStatusRequest());
-  }, [dispatch])
+    dispatch(fetchOrdersRequest());
+  }, [dispatch]);
 
   const renderStatusDropdown = (order) => {
+    const value = order.status;
     return (
-      <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
-        <Select
-          value={order.status}
-          onChange={(event) => handleStatusChange(event, order.id)}
-          sx={{
-            backgroundColor:
-              status === "Preparing"
-                ? "#ffcc80"
-                : status === "Ready"
-                ? "#aed581"
-                : "#90caf9", 
-            fontSize: "0.875rem",
-            height: "35px",
-            borderRadius: "8px", 
-            border: "none",
-            boxShadow: "none", 
-            "&:hover": {
-              backgroundColor:
-                status === "Preparing"
-                  ? "#ffa726"
-                  : status === "Ready"
-                  ? "#81c784"
-                  : "#64b5f6", 
-            },
-            "& .MuiSelect-select": {
-              padding: "8px",
-            },
-          }}
-          disableUnderline
-          displayEmpty
-        >
-          {statuses.map((status) => (
-            <MenuItem
-              key={status}
-              value={status}
-              sx={{
-                backgroundColor:
-                  status === "Preparing"
-                    ? "#ffa500"
-                    : status === "Ready"
-                    ? "#008000"
-                    : "#90caf9",
-                "&:hover": {
-                  backgroundColor:
-                    status === "Preparing"
-                      ? "#ffa726"
-                      : status === "Ready"
-                      ? "#81c784"
-                      : "#64b5f6",
-                },
-              }}
-            >
-              {status}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Chip
+          label={value}
+          color={statusColor[value] || "default"}
+          size="small"
+        />
+        <FormControl size="small">
+          <Select
+            value={value}
+            onChange={(event) => handleStatusChange(event, order.id)}
+            sx={{ height: 32, borderRadius: 2, minWidth: 140 }}
+          >
+            {statuses.map((status) => (
+              <MenuItem key={status} value={status}>
+                <Typography variant="body2">{status}</Typography>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
     );
   };
 
-
   useEffect(() => {
-    const transformedData = orders.map((order) => ({
-      name: order.Customer.name,
-      Phone: order.Customer.phone_number,
-      topping: order.OrderItems.flatMap((item) =>
-        item.Toppings.map((topping) => topping.name)
-      ).join(", "),
-      quantity: order.OrderItems.reduce((acc, item) => acc + item.quantity, 0),
-      status: renderStatusDropdown(order),
-    }));
+    const transformedData = orders.map((order) => {
+      const customerName = order?.customer?.name || "";
+      const phone = order?.customer?.phone_number || "";
+      const toppings = (order?.orderItems || [])
+        .flatMap((item) =>
+          (item?.orderItemToppings || []).map((t) => t?.topping?.name)
+        )
+        .filter(Boolean)
+        .join(", ");
+      const qty = (order?.orderItems || []).reduce(
+        (acc, item) => acc + (item?.quantity || 0),
+        0
+      );
+      return {
+        name: customerName,
+        phone,
+        toppings,
+        quantity: qty,
+        status: renderStatusDropdown(order),
+      };
+    });
     setData(transformedData);
-  }, [orders]);
+  }, [orders, statuses]);
 
   const columns = [
-    { accessorKey: "name", header: "Name" },
-    { accessorKey: "Phone", header: "Phone number" },
-    { accessorKey: "topping", header: "Topping" },
-    { accessorKey: "quantity", header: "Quantity" },
+    { accessorKey: "name", header: "Customer" },
+    { accessorKey: "phone", header: "Phone" },
+    { accessorKey: "toppings", header: "Toppings" },
+    { accessorKey: "quantity", header: "Qty" },
     { accessorKey: "status", header: "Status" },
   ];
 
-  useEffect(() => {
-    dispatch(managerFetchOrdersRequest());
-  }, [dispatch]);
+  const title = "Add Order";
 
-  const title = "Packages";
+  const formFields = [
+    "restaurantId",
+    "menuId",
+    "quantity",
+    "toppings", // comma-separated list
+  ];
+
+  const handleAddOrder = (values) => {
+    const restaurantId = Number(values.restaurantId);
+    const menuId = Number(values.menuId);
+    const quantity = Number(values.quantity || 1);
+    const toppings = (values.toppings || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const payload = {
+      restaurantId,
+      items: [
+        {
+          menuId,
+          quantity,
+          toppings,
+        },
+      ],
+    };
+
+    dispatch(orderRequest(payload));
+  };
 
   return (
     <>
-      <AdminUser data={data} columns={columns} title={title} />
+      <AdminUser
+        data={data}
+        columns={columns}
+        title={title}
+        formFields={formFields}
+        onSubmit={handleAddOrder}
+      />
     </>
   );
 };
