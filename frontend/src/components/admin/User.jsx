@@ -26,9 +26,9 @@ const AdminUser = ({
   permission,
 }) => {
   const [open, setOpen] = useState(false);
-  const managers = useSelector((state) => state.admin.managers);
-  const roles = useSelector((state) => state.admin.roles) || [];
-  const managerOptions = managers.map((manager) => ({
+  const managers = useSelector((state) => state?.admin?.managers);
+  const roles = useSelector((state) => state?.admin?.roles) || [];
+  const managerOptions = managers?.map((manager) => ({
     value: manager.name,
     label: manager.name,
   }));

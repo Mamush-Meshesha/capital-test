@@ -30,9 +30,14 @@ const OrderSuccess = () => {
     };
   }, [dispatch]);
 
-  const totalPrice =
-    items?.reduce((acc, item) => acc + item.pizza.price * item.quantity, 0) ||
-    0;
+  const { orderDetails } = useSelector((state) => state.order);
+
+const totalPrice = Array.isArray(orderDetails)
+  ? orderDetails.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  : orderDetails?.price * orderDetails?.quantity || 0;
+
+
+
   const orderNumber = `#${Math.floor(100000 + Math.random() * 900000)}`;
 
   return (

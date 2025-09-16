@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCustomersRequest } from "../../store/slice/adminSlice";
 import AdminUser from "../../components/admin/User";
-import Footer from "../../components/Footer";
 import { Switch } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 const Customer = () => {
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const customers = useSelector((state) => state.admin.customers) || [];
+  const customers = useSelector((state) => state?.admin?.customers) || [];
   useEffect(() => {
     const transformedData = customers.map((user) => ({
       name: user.name,
@@ -75,7 +74,6 @@ const Customer = () => {
         title={title}
         formFields={formFields}
       />
-      <Footer />
     </Box>
   );
 };

@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt-uitls");
 const { default: axios } = require("axios");
 const { defineAbilitiesFor } = require("../utils/permissions");
+
+
 const managerSignup = async (req, res) => {
   const { name, email, location, password, phone_number, roleName } = req.body;
 

@@ -14,7 +14,6 @@ import OrderSuccess from "./pages/OrderSuccess";
 import AdminHome from "./pages/admin/HomeA";
 import AdminLayout from "./components/auth/AdminLayout.jsx";
 import UserLayout from "./layouts/UserLayout.jsx";
-import AdminLogin from "./pages/admin/AdminLogin";
 import UserDashBoard from "./pages/admin/User.jsx";
 import {
   createBrowserRouter,
@@ -26,7 +25,6 @@ import Role from "./pages/admin/Role.jsx";
 import Customer from "./pages/admin/Customer.jsx";
 import Managers from "./pages/admin/Manager.jsx";
 import Restaurant from "./pages/admin/Restaurant.jsx";
-import ManagerLogin from "./pages/admin/ManagerLogin.jsx";
 import ManagerSignup from "./pages/admin/ManagerSignup.jsx";
 import Profile from "./pages/admin/Profile.jsx";
 import Settings from "./pages/admin/Settings.jsx";

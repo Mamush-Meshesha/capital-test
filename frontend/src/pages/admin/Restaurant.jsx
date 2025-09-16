@@ -5,11 +5,11 @@ import { createRestaurantRequest, fetchManagerRequest, fetchRestaurantRequest } 
 import AdminUser from "../../components/admin/User"
 const Restaurant = () => {
     const [data, setData] = useState([])
-    const restaurant = useSelector((state) => state.admin.restaurant) 
+    const restaurant = useSelector((state) => state?.admin?.restaurant) 
 const dispatch = useDispatch()
    
     useEffect(() => {
-        const transformedData = restaurant.map((rest) => ({
+        const transformedData = restaurant?.map((rest) => ({
             name: rest.name,
             location: rest.location,
             created_at: rest.created_at

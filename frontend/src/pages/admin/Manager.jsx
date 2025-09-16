@@ -6,18 +6,18 @@ import {
   fetchRoleRequest,
 } from "../../store/slice/adminSlice";
 import AdminUser from "../../components/admin/User";
-import Footer from "../../components/Footer";
 import { managerRegisterRequest } from "../../store/slice/manaSlice";
+
 
 const Managers = () => {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
-  const managers = useSelector((state) => state.admin.managers || []);
-  const roles = useSelector((state) => state.admin.roles || []);
+  const managers = useSelector((state) => state?.admin?.managers || []);
+  const roles = useSelector((state) => state?.admin?.roles || []);
 
   console.log(roles);
   useEffect(() => {
-    const transformedData = managers.map((mana) => ({
+    const transformedData = managers?.map((mana) => ({
       name: mana.name,
       email: mana.email,
       phone: mana.phone_number,
@@ -74,7 +74,6 @@ const Managers = () => {
         roleOptions={roleOptions}
         onSubmit={handleSubmit}
       />
-      <Footer />
     </Box>
   );
 };

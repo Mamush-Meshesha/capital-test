@@ -442,7 +442,7 @@ const Order = () => {
 
   // Create array of 2 different pizza images for the bottom displayer
   const pizzaImages = [
-    "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=400&fit=crop&crop=center", // Margherita
+    "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Margherita
     "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=400&fit=crop&crop=center", // Pepperoni
   ];
 
@@ -508,6 +508,7 @@ const Order = () => {
     dispatch(
       addToCart({
         pizza: selectedPizza,
+        price: selectedPizza.price,
         toppings: selectedToppings,
         quantity,
       })

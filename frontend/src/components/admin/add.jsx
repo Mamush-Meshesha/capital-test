@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, } from "react-redux";
 import { createMenuToppingRequest, uploadImageImgurRequest } from "../../store/slice/manaSlice";
 
 const AddRecipe = () => {
@@ -51,13 +51,8 @@ const handleImageChange = async (event) => {
 };
 
 
-const data = useSelector((state) => state.manager.image.data)
   
-console.log(data)
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
-    setPreview(null);
-  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,7 +60,7 @@ console.log(data)
     const formdata = {
       name,
       price,
-      image_url: data, 
+      image_url: "https://i.imgur.com/your-uploaded-image.jpg", 
       toppings: checkedItems.map((index) => items[index]), 
     };
 
@@ -179,7 +174,7 @@ console.log(data)
                 <Button
                   variant="outlined"
                   color="secondary"
-                  onClick={handleRemoveImage}
+                  onClick={console.log("Remove image functionality to be implemented")}
                   sx={{ marginTop: 2 }}
                 >
                   Remove Image

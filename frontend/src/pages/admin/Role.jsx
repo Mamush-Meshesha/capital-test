@@ -11,8 +11,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 const Role = () => {
   const dispatch = useDispatch();
-  const roles = useSelector((state) => state.admin.roles);
-  const permissions = useSelector((state) => state.manager.permissions)
+  const roles = useSelector((state) => state?.admin?.roles);
+  const permissions = useSelector((state) => state?.manager?.permissions)
   const [data, setData] = useState([]);
   useEffect(() => {
     if (!roles || roles.length === 0) {

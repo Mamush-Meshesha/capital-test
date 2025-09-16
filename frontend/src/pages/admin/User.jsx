@@ -17,8 +17,8 @@ import { fetchOrdersRequest } from "../../store/slice/adminSlice";
 const UserDashBoard = () => {
   const dispatch = useDispatch();
   const statuses =
-    useSelector((state) => state.customer.orderStatus.status) || [];
-  const orders = useSelector((state) => state.admin.orders) || [];
+    useSelector((state) => state?.customer?.orderStatus?.status) || [];
+  const orders = useSelector((state) => state?.admin?.orders) || [];
   const [data, setData] = useState([]);
 
   const statusColor = useMemo(
@@ -33,7 +33,7 @@ const UserDashBoard = () => {
     []
   );
   const handleStatusChange = (event, orderId) => {
-    const newStatus = event.target.value;
+    const newStatus = event?.target?.value;
     console.log(`Change status of order ${orderId} to ${newStatus}`);
 
     dispatch(updateOrderStatus({ orderId, status: newStatus }));
